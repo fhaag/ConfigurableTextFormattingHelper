@@ -1,0 +1,5 @@
+﻿--- # Story 1
+syntax: january
+semantics: prose
+content:
+  - story1.txt

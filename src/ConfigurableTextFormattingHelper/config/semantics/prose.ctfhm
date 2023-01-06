@@ -1,0 +1,48 @@
+﻿--- # semantics rules for prose
+context:
+  - id: default
+    elements:
+      - id: newline
+        output:
+          - renderingInstruction: linebreak
+      - id: parbreak
+        output:
+          - renderingInstruction: parbreak
+      - id: dictterm
+        output:
+          - dictKey: $key$
+      - id: textdash
+        output:
+          - verbatim: " – "
+      - id: speech
+        output:
+          - verbatim: "“"
+          - type: spanContent
+            context: speech-oddLevel
+          - verbatim: "”"
+  - id: speech-oddLevel
+    base: default
+    elements:
+      - id: speech
+        output:
+          - verbatim: "‘"
+          - type: spanContent
+            context: speech-evenLevel
+          - verbatim: "’"
+      - id: parbreak
+        output:
+          - renderingInstruction: parbreak
+          - verbatim: "“"
+  - id: speech-evenLevel
+    base: default
+    elements:
+      - id: speech
+        output:
+          - verbatim: "“"
+          - type: spanContent
+            context: speech-oddLevel
+          - verbatim: "”"
+      - id: parbreak
+        output:
+          - renderingInstruction: parbreak
+          - verbatim: "‘"

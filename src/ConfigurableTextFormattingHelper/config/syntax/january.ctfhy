@@ -1,0 +1,16 @@
+﻿--- # January syntax
+escape: \\
+elements:
+  - id: newline
+    token: \s\s(?:\r\n|\r|\n)
+  - id: parbreak
+    token: (?:\r\n|\r|\n)(?:\r\n|\r|\n)
+  - id: textdash
+    token:
+      - \s---?\s
+      - (?<=\w)---?(?=\w)
+  - id: dictterm
+    token: \$(?<key>[A-Za-z0-9\-_]+)\$
+  - id: speech
+    start: \[(?:(?<speaker>[A-Za-z0-9\-_]+):)?
+    end: \]

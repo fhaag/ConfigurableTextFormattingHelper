@@ -36,7 +36,7 @@ namespace ConfigurableTextFormattingHelper.Infrastructure.Yaml
 			if (parser.TryConsume<SequenceStart>(out _))
 			{
 				var items = new List<string>();
-				while (parser.MoveNext())
+				while (!parser.Accept<SequenceEnd>(out _))
 				{
 					if (parser.Accept<Scalar>(out scalar))
 					{
@@ -46,18 +46,21 @@ namespace ConfigurableTextFormattingHelper.Infrastructure.Yaml
 					{
 						// do nothing
 					}
-					else if (parser.Accept<SequenceEnd>(out _))
-					{
-						parser.MoveNext();
-						return CreateEnumerable(type, items);
-					}
 					else
 					{
 						throw new NotSupportedException(string.Format(InvariantCulture,
 							"Unexpected YAML token at line {0}, position {1}.",
 							parser.Current!.Start.Line, parser.Current.Start.Column));
 					}
+
+					if (!parser.MoveNext())
+					{
+						break;
+					}
 				}
+
+				parser.MoveNext();
+				return CreateEnumerable(type, items);
 			}
 
 			throw new NotSupportedException(string.Format(InvariantCulture,

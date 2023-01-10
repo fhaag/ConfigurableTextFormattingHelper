@@ -5,5 +5,8 @@
 	/// </summary>
 	public interface IRenderer
 	{
+		void AppendLiteral(string literal);
+
+		void AppendRenderingInstruction(string instruction);
 	}
 }

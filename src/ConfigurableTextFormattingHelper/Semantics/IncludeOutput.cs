@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConfigurableTextFormattingHelper.Documents;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,9 @@ namespace ConfigurableTextFormattingHelper.Semantics
 	/// </summary>
 	internal sealed class IncludeOutput : Output
 	{
+		public override IEnumerable<TextElement> Generate(IReadOnlyDictionary<string, string[]> arguments)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

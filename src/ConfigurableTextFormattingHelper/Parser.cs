@@ -3,6 +3,9 @@ using System.Text.RegularExpressions;
 
 namespace ConfigurableTextFormattingHelper
 {
+	/// <summary>
+	/// Transforms raw source code to a <see cref="Documents.Document">structured document</see>, based on a syntax definition.
+	/// </summary>
 	public sealed class Parser
 	{
 		internal Parser(ProcessingManager processingManager)

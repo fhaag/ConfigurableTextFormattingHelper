@@ -2,12 +2,14 @@
 {
 	internal sealed class MessageContent
 	{
-		public MessageContent(string text)
+		public MessageContent(string messageId, string text)
 		{
 			ArgumentNullException.ThrowIfNull(text);
 
 			Text = text;
 		}
+
+		public string MessageId { get; }
 
 		public string Text { get; }
 

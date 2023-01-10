@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ConfigurableTextFormattingHelper.Semantics
+﻿namespace ConfigurableTextFormattingHelper.Semantics
 {
 	internal abstract class Output
 	{
+		public abstract IEnumerable<Documents.TextElement> Generate(IReadOnlyDictionary<string, string[]> arguments);
 	}
 }

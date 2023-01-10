@@ -9,7 +9,7 @@
 	/// <para>Each instance of this class represents the process of processing a set of input files and generating output.
 	///   It stores intermediate information and the final results of the operation.</para>
 	/// </remarks>
-	internal sealed class ProcessingManager
+	internal sealed class ProcessingManager : IProcessingMessageList
 	{
 		public ProcessingManager(Syntax.SyntaxDef syntax)
 		{

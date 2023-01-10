@@ -1,4 +1,6 @@
-﻿namespace ConfigurableTextFormattingHelper.Semantics
+﻿using ConfigurableTextFormattingHelper.Documents;
+
+namespace ConfigurableTextFormattingHelper.Semantics
 {
 	/// <summary>
 	/// Emits an instruction for the renderer.
@@ -24,6 +26,18 @@
 	/// </remarks>
 	internal sealed class RenderingInstructionOutput : Output
 	{
-		public string? Instruction { get; set; }
+		public RenderingInstructionOutput(string? instruction)
+		{
+			ArgumentNullException.ThrowIfNull(instruction);
+
+			Instruction = instruction;
+		}
+
+		public string Instruction { get; }
+
+		public override IEnumerable<TextElement> Generate(IReadOnlyDictionary<string, string[]> arguments)
+		{
+			yield return new Documents.RenderingInstruction(Instruction);
+		}
 	}
 }

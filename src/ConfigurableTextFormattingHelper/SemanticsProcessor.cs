@@ -23,7 +23,22 @@
 
 		private Documents.Span ProcessSpan(Documents.Span span)
 		{
-			throw new NotImplementedException();
+			foreach (var child in span.Elements)
+			{
+
+			}
+		}
+
+		private IEnumerable<Documents.TextElement> ProcessElement(Documents.TextElement element)
+		{
+			if (element is Documents.ActiveTextElement activeElement)
+			{
+				
+			}
+			else
+			{
+				yield return element;
+			}
 		}
 	}
 }

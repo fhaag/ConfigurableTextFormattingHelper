@@ -1,8 +1,8 @@
-﻿namespace ConfigurableTextFormattingHelper.Syntax
+﻿namespace ConfigurableTextFormattingHelper.Projects
 {
 	using Infrastructure;
 
-	internal sealed class SyntaxLoader : SettingsLoaderBase<SyntaxDef>
+	internal sealed class ProjectLoader : SettingsLoaderBase<Project>
 	{
 		private readonly Lazy<YamlDotNet.Serialization.IDeserializer> deserializer
 			= new(() => Infrastructure.Yaml.DeserializerProvider.Build());
@@ -12,7 +12,7 @@
 			var result = base.DetermineFormat(path, format);
 			if (result == SettingsFormat.Unknown)
 			{
-				if (Path.GetExtension(path) == Constants.SyntaxExtension)
+				if (Path.GetExtension(path) == Constants.ProjectExtension)
 				{
 					return SettingsFormat.Yaml;
 				}
@@ -22,15 +22,11 @@
 
 		protected override bool CanProcessFormat(SettingsFormat format) => format == SettingsFormat.Yaml;
 
-		public override SyntaxDef Load(string rawData, SettingsFormat format)
+		public override Project Load(string rawData, SettingsFormat format)
 		{
 			ArgumentNullException.ThrowIfNull(rawData);
 
-			var rawDef = deserializer.Value.Deserialize<Raw.SyntaxDef>(rawData);
-
-			var result = new SyntaxDef();
-			rawDef?.Populate(result);
-			return result;
+			return deserializer.Value.Deserialize<Project>(rawData);
 		}
 	}
 }

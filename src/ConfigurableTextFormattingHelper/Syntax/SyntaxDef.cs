@@ -11,7 +11,6 @@ namespace ConfigurableTextFormattingHelper.Syntax
 	{
 		public void AddEscape(string pattern)
 		{
-			//escapePatterns.Add(new Regex(@"\G(?:" + pattern + ")"));
 			escapePatterns.Add(pattern.ToPreciseLocationStartRegex());
 		}
 
@@ -49,6 +48,18 @@ namespace ConfigurableTextFormattingHelper.Syntax
 			}
 
 			return null;
+		}
+
+		public void Append(SyntaxDef other)
+		{
+			ArgumentNullException.ThrowIfNull(other);
+
+			escapePatterns.AddRange(other.EscapePatterns);
+
+			for (var i = 0; i < other.Elements.Count; i++)
+			{
+				elements.Insert(i, other.Elements[i]);
+			}
 		}
 	}
 }

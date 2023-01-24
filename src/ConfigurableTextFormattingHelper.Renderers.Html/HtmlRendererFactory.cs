@@ -8,7 +8,7 @@ namespace ConfigurableTextFormattingHelper.Renderers.Html
 	{
 		public string Identifier => "HTML";
 
-		public string DisplayName => "HTML";
+		public string DisplayName => "HyperText Markup Language";
 
 		public HtmlCliSettings? Settings { get; set; }
 

@@ -16,7 +16,7 @@ namespace ConfigurableTextFormattingHelper.Infrastructure.Yaml
 				return items.ToArray();
 			}
 
-			if (type.IsAssignableTo(typeof(List<string>)))
+			if (type.IsAssignableTo(typeof(List<string>)) || type.IsAssignableTo(typeof(IList<string>)))
 			{
 				return items.ToList();
 			}

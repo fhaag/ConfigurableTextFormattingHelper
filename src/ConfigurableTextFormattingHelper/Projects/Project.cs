@@ -9,10 +9,11 @@
 
 		public string? Description { get; set; }
 
-		public IList<string> Syntax { get; } = new List<string>();
+		public IList<string>? Syntax { get; set; }
 
-		public IList<string> Semantics { get; } = new List<string>();
+		public IList<string>? Semantics { get; set; }
 
-		public IList<string> Sources { get; } = new List<string>();
+		[YamlDotNet.Serialization.YamlMember(Alias = "content")]
+		public IList<string>? Sources { get; set; }
 	}
 }

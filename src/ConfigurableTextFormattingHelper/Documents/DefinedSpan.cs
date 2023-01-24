@@ -1,15 +1,15 @@
 ﻿namespace ConfigurableTextFormattingHelper.Documents
 {
-	internal sealed class Command : TextElement, IDefinedTextElement
+	internal sealed class DefinedSpan : Span, IDefinedTextElement
 	{
-		public Command(Syntax.CommandDef elementDef) : base()
+		public DefinedSpan(Syntax.SpanDef elementDef) : base()
 		{
 			ArgumentNullException.ThrowIfNull(elementDef);
 
 			ElementDef = elementDef;
 		}
 
-		public Syntax.CommandDef ElementDef { get; }
+		public Syntax.SpanDef ElementDef { get; }
 
 		Syntax.ElementDef IDefinedTextElement.ElementDef => ElementDef;
 
@@ -21,10 +21,10 @@
 
 		public override TextElement CloneDeep()
 		{
-			var result = new Command(ElementDef);
-			foreach (var arg in arguments)
+			var result = new DefinedSpan(ElementDef);
+			foreach (var child in Elements)
 			{
-				result.Arguments[arg.Key] = arg.Value;
+				result.Elements.Add(child.CloneDeep());
 			}
 			return result;
 		}

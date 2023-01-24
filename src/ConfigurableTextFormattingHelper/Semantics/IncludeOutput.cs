@@ -12,7 +12,7 @@ namespace ConfigurableTextFormattingHelper.Semantics
 	/// </summary>
 	internal sealed class IncludeOutput : Output
 	{
-		public override IEnumerable<TextElement> Generate(IReadOnlyDictionary<string, string[]> arguments)
+		public override IEnumerable<TextElement> Generate(ISubstitutionProcess process, IReadOnlyDictionary<string, string[]> arguments)
 		{
 			throw new NotImplementedException();
 		}

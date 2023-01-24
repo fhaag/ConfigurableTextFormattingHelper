@@ -4,10 +4,13 @@
 	{
 		public string? Id { get; set; }
 
+		public string? Base { get; set; }
+
 		public List<ElementRuleDef>? Elements { get; set; }
 
 		public Semantics.ContextDef ToRuntimeContextDef(SemanticsProcessingManager processingManager)
 		{
+			// TODO: consider Base
 			var result = new Semantics.ContextDef(Id ?? "");
 
 			if (Elements != null)

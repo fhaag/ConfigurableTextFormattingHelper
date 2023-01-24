@@ -14,17 +14,19 @@
 
 		public string? Context { get; set; }
 
-		public Semantics.Output CreateOutput(SemanticsProcessingManager processingManager)
+		public Output CreateOutput(SemanticsProcessingManager processingManager)
 		{
 			return Type?.ToLowerInvariant() switch
 			{
 				"verbatim" => CreateVerbatim(processingManager),
-				"renderingInstruction" => CreateRenderingInstruction(processingManager),
-				_ => throw new NotImplementedException()
+				"renderinginstruction" => CreateRenderingInstruction(processingManager),
+				"dictionary" => CreateDictionary(processingManager),
+				"spancontent" => CreateSpanContent(processingManager),
+				_ => GuessOutput(processingManager)
 			};
 		}
 
-		private Semantics.VerbatimOutput CreateVerbatim(SemanticsProcessingManager processingManager)
+		private VerbatimOutput CreateVerbatim(SemanticsProcessingManager processingManager)
 		{
 			if (Verbatim == null)
 			{
@@ -34,7 +36,7 @@
 			return new(Verbatim ?? "");
 		}
 
-		private Semantics.RenderingInstructionOutput CreateRenderingInstruction(SemanticsProcessingManager processingManager)
+		private RenderingInstructionOutput CreateRenderingInstruction(SemanticsProcessingManager processingManager)
 		{
 			if (RenderingInstruction == null)
 			{
@@ -42,6 +44,38 @@
 			}
 
 			return new(RenderingInstruction);
+		}
+
+		private DictionaryOutput CreateDictionary(SemanticsProcessingManager processingManager)
+		{
+			// TODO: complete
+			return new();
+		}
+
+		private SpanContentOutput CreateSpanContent(SemanticsProcessingManager processingManager)
+		{
+			// TODO: complete (Context)
+			return new();
+		}
+
+		private Output GuessOutput(SemanticsProcessingManager processingManager)
+		{
+			if (!string.IsNullOrEmpty(RenderingInstruction))
+			{
+				return CreateRenderingInstruction(processingManager);
+			}
+
+			if (!string.IsNullOrEmpty(Verbatim))
+			{
+				return CreateVerbatim(processingManager);
+			}
+
+			if (!string.IsNullOrEmpty(DictKey))
+			{
+				return CreateDictionary(processingManager);
+			}
+
+			throw new InvalidOperationException("Cannot determine output type.");
 		}
 	}
 }

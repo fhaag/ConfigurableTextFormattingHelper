@@ -16,9 +16,9 @@ namespace ConfigurableTextFormattingHelper.Semantics
 
 		public string Text { get; }
 
-		public override IEnumerable<TextElement> Generate(IReadOnlyDictionary<string, string[]> arguments)
+		public override IEnumerable<TextElement> Generate(ISubstitutionProcess process, IReadOnlyDictionary<string, string[]> arguments)
 		{
-			yield return new Documents.Literal(Text);
+			yield return new Literal(Text);
 		}
 	}
 }

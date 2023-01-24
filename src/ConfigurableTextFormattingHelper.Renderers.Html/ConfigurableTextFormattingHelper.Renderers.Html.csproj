@@ -5,7 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <BaseOutputPath>..\..\bin\</BaseOutputPath>
-	<OutDir>$(BaseOutputPath)\$(Configuration)\$(TargetFramework)\plugins\</OutDir>
+	<OutDir>$(BaseOutputPath)\$(Configuration)\$(TargetFramework)\plugins\html\</OutDir>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,5 +18,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="pwsh -File &quot;../build/cleanPluginBuild.ps1&quot; &quot;$(ProjectDir)$(BaseOutputPath)$(Configuration)\$(TargetFramework)&quot; $(ProjectDir)$(OutDir)" />
+	</Target>
 
 </Project>

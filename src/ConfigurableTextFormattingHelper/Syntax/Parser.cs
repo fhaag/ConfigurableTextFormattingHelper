@@ -1,12 +1,12 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 
-namespace ConfigurableTextFormattingHelper
+namespace ConfigurableTextFormattingHelper.Syntax
 {
 	/// <summary>
 	/// Transforms raw source code to a <see cref="Documents.Document">structured document</see>, based on a syntax definition.
 	/// </summary>
-	public sealed class Parser
+	public sealed partial class Parser
 	{
 		internal Parser(ProcessingManager processingManager)
 		{
@@ -17,12 +17,15 @@ namespace ConfigurableTextFormattingHelper
 
 		private readonly ProcessingManager processingManager;
 
-		internal Documents.Span Parse(string str)
+		internal Documents.Span Parse(SyntaxDef syntax, string str)
 		{
+			ArgumentNullException.ThrowIfNull(syntax);
 			ArgumentNullException.ThrowIfNull(str);
 
+			var process = new ParsingProcess(syntax);
+
 			// TODO: get "global" root span def from elsewhere?
-			Documents.Span currentSpan = new(new Syntax.SpanDef("", Array.Empty<string>(), Array.Empty<string>()));
+			Documents.Span currentSpan = new();
 			StringBuilder currentLiteral = new();
 
 			var chIdx = 0;
@@ -56,7 +59,7 @@ namespace ConfigurableTextFormattingHelper
 
 			while (chIdx < str.Length)
 			{
-				if (processingManager.Syntax.MatchEscape(str, chIdx) is { } escapeMatch)
+				if (process.Syntax.MatchEscape(str, chIdx) is { } escapeMatch)
 				{
 					chIdx += escapeMatch.Length;
 					if (chIdx < str.Length)
@@ -66,40 +69,49 @@ namespace ConfigurableTextFormattingHelper
 					continue;
 				}
 
-				if (currentSpan.ElementDef?.FindEndInText(str, chIdx) is { } endMatch)
+				if (currentSpan is Documents.DefinedSpan currentDefinedSpan)
 				{
-					if (currentSpan.Parent == null)
+					if (currentDefinedSpan.ElementDef?.FindEndInText(str, chIdx) is { } endMatch)
 					{
-						// TODO: error
-						throw new InvalidOperationException();
+						if (currentSpan.Parent == null)
+						{
+							// TODO: error
+							throw new InvalidOperationException();
+						}
+
+						SaveVerbatimContent();
+
+						chIdx += endMatch.Length;
+						StoreArguments(endMatch, currentDefinedSpan.Arguments);
+						// TODO: if current syntax environment was started by this span, call processingManager.LeaveSyntaxEnvironment()
+						currentSpan = currentSpan.Parent;
+						continue;
 					}
-
-					SaveVerbatimContent();
-
-					chIdx += endMatch.Length;
-					StoreArguments(endMatch, currentSpan.Arguments);
-					// TODO: if current syntax environment was started by this span, call processingManager.LeaveSyntaxEnvironment()
-					currentSpan = currentSpan.Parent;
-					continue;
 				}
 
-				if (processingManager.Syntax.MatchElement(str, chIdx) is { } elementMatch)
+				if (process.Syntax.MatchElement(str, chIdx) is { } elementMatch)
 				{
 					SaveVerbatimContent();
 
 					chIdx += elementMatch.Match.Length;
 
-					Documents.ActiveTextElement docElement;
 					switch (elementMatch.Element)
 					{
-						case Syntax.CommandDef cmdDef:
-							docElement = new Documents.Command(cmdDef);
-							currentSpan.Elements.Add(docElement);
+						case CommandDef cmdDef:
+							{
+								var docElement = new Documents.Command(cmdDef);
+								StoreArguments(elementMatch.Match, docElement.Arguments);
+								currentSpan.Elements.Add(docElement);
+							}
 							break;
-						case Syntax.SpanDef spanDef:
-							docElement = new Documents.Span(spanDef);
-							currentSpan.Elements.Add(docElement);
-							currentSpan = (Documents.Span)docElement;
+						case SpanDef spanDef:
+							{
+								var docElement = new Documents.DefinedSpan(spanDef);
+								StoreArguments(elementMatch.Match, docElement.Arguments);
+								currentSpan.Elements.Add(docElement);
+
+								currentSpan = docElement;
+							}
 							// TODO: update syntax environment?
 							// but if each span creates a new syntax environment, the terminatedBy condition is never found
 							// (syntax environments are only terminated by end patterns)
@@ -107,8 +119,7 @@ namespace ConfigurableTextFormattingHelper
 						default:
 							throw new InvalidOperationException();
 					}
-
-					StoreArguments(elementMatch.Match, docElement.Arguments);
+					
 					continue;
 				}
 

@@ -8,9 +8,9 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 	{
 		private void CheckParseResult(SD.SyntaxDef syntax, string source, Action<Doc.Span> checkResult)
 		{
-			var parser = new ConfigurableTextFormattingHelper.Parser(new ProcessingManager(syntax));
+			var parser = new ConfigurableTextFormattingHelper.Syntax.Parser(new ProcessingManager());
 
-			var span = parser.Parse(source);
+			var span = parser.Parse(syntax, source);
 
 			checkResult(span);
 		}
@@ -142,24 +142,24 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 			{
 				span.Elements.Should().HaveCount(2).And.OnlyContain(e => e.Parent == span);
 
-				var span1 = span.Elements[0].Should().BeOfType<Doc.Span>().Which;
+				var span1 = span.Elements[0].Should().BeOfType<Doc.DefinedSpan>().Which;
 				span1.ElementDef.Id.Should().Be("s1");
 				span1.Elements.Should().HaveCount(2).And.OnlyContain(e => e.Parent == span1);
 
-				var span1Child1 = span1.Elements[0].Should().BeOfType<Doc.Span>().Which;
+				var span1Child1 = span1.Elements[0].Should().BeOfType<Doc.DefinedSpan>().Which;
 				span1Child1.ElementDef.Id.Should().Be("s2");
 				span1Child1.Arguments.Should().ContainKey("testval").WhoseValue.Should().BeEquivalentTo(new[] { "XXXX" });
 				span1Child1.Elements.Should().HaveCount(1).And.OnlyContain(e => e.Parent == span1Child1);
 
-				var innermost = span1Child1.Elements[0].Should().BeOfType<Doc.Span>().Which;
+				var innermost = span1Child1.Elements[0].Should().BeOfType<Doc.DefinedSpan>().Which;
 				innermost.ElementDef.Id.Should().Be("s1");
 				innermost.Elements.Should().BeEmpty();
 
-				var span1Child2 = span1.Elements[1].Should().BeOfType<Doc.Span>().Which;
+				var span1Child2 = span1.Elements[1].Should().BeOfType<Doc.DefinedSpan>().Which;
 				span1Child2.ElementDef.Id.Should().Be("s1");
 				span1Child2.Elements.Should().BeEmpty();
 
-				var span2 = span.Elements[1].Should().BeOfType<Doc.Span>().Which;
+				var span2 = span.Elements[1].Should().BeOfType<Doc.DefinedSpan>().Which;
 				span2.ElementDef.Id.Should().Be("s1");
 				span2.Elements.Should().BeEmpty();
 			});
@@ -174,20 +174,20 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 
 				span.Elements[0].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("ab");
 
-				var span1 = span.Elements[1].Should().BeOfType<Doc.Span>().Which;
+				var span1 = span.Elements[1].Should().BeOfType<Doc.DefinedSpan>().Which;
 				span1.ElementDef.Id.Should().Be("s1");
 				span1.Elements.Should().HaveCount(1).And.OnlyContain(e => e.Parent == span1);
 				span1.Elements[0].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("xyz");
 
 				span.Elements[2].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("def§AB");
 
-				var span2 = span.Elements[3].Should().BeOfType<Doc.Span>().Which;
+				var span2 = span.Elements[3].Should().BeOfType<Doc.DefinedSpan>().Which;
 				span2.ElementDef.Id.Should().Be("s2");
 				span2.Arguments.Should().ContainKey("testval").WhoseValue.Should().BeEquivalentTo(new[] { "ABC" });
 				span2.Elements.Should().HaveCount(2).And.OnlyContain(e => e.Parent == span2);
 				span2.Elements[0].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("1234");
 				
-				var span2Child1 = span2.Elements[1].Should().BeOfType<Doc.Span>().Which;
+				var span2Child1 = span2.Elements[1].Should().BeOfType<Doc.DefinedSpan>().Which;
 				span2Child1.ElementDef.Id.Should().Be("s1");
 				span2Child1.Elements.Should().HaveCount(1).And.OnlyContain(e => e.Parent == span2Child1);
 				span2Child1.Elements[0].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be(" ");

@@ -2,6 +2,9 @@
 context:
   - id: default
     elements:
+      - id: whitespace
+        output:
+          - verbatim: " "
       - id: newline
         output:
           - renderingInstruction: linebreak

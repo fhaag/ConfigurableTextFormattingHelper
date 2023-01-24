@@ -1,10 +1,12 @@
 ﻿--- # January syntax
 escape: \\
 elements:
+  - id: parbreak
+    token: (?:\r\n\r\n|\r\r|\n\n)
   - id: newline
     token: \s\s(?:\r\n|\r|\n)
-  - id: parbreak
-    token: (?:\r\n|\r|\n)(?:\r\n|\r|\n)
+  - id: whitespace
+    token: (?:\r\n|\r|\n)
   - id: textdash
     token:
       - \s---?\s

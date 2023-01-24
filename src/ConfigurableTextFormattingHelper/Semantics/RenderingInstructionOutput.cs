@@ -35,7 +35,7 @@ namespace ConfigurableTextFormattingHelper.Semantics
 
 		public string Instruction { get; }
 
-		public override IEnumerable<TextElement> Generate(IReadOnlyDictionary<string, string[]> arguments)
+		public override IEnumerable<TextElement> Generate(ISubstitutionProcess process, IReadOnlyDictionary<string, string[]> arguments)
 		{
 			yield return new Documents.RenderingInstruction(Instruction);
 		}

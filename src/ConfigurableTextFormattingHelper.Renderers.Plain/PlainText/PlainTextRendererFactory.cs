@@ -18,6 +18,7 @@ namespace ConfigurableTextFormattingHelper.Renderers.Plain.PlainText
 			}
 
 			var destPath = Settings.EffectiveOutputPath(".txt");
+			Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
 			return new PlainTextRenderer(new StreamWriter(File.Create(destPath), Encoding.UTF8));
 		}
 	}

@@ -40,10 +40,19 @@
 		{
 			ArgumentNullException.ThrowIfNull(rendererFactory);
 
+			var mgr = new ProcessingManager();
+
 			var cfgRendererFactory = PrepareRenderer(rendererFactory);
-			cfgRendererFactory.LoadSettings(new[] { "" }.Concat(args).ToArray());
+			cfgRendererFactory.LoadSettings(args);
 			var renderer = cfgRendererFactory.RendererFactory.CreateRenderer();
-			// TODO: actually execute conversion
+			try
+			{
+				Execute(mgr, cfgRendererFactory.Settings, renderer);
+			}
+			finally
+			{
+				(renderer as IDisposable)?.Dispose();
+			}
 		}
 
 		private ConfiguredRendererFactory PrepareRenderer(IRendererFactory rendererFactory)
@@ -64,57 +73,94 @@
 			return new SimpleConfiguredRendererFactory(rendererFactory);
 		}
 
-		private void Execute(CliSettings settings, IRenderer renderer)
+		private void Execute(ProcessingManager mgr, CliSettings settings, IRenderer renderer)
 		{
+			if (string.IsNullOrEmpty(settings.ProjectPath))
+			{
+				throw new InvalidOperationException("No project path specified.");
+			}
+
 			var pjLoader = new ProjectLoader();
-			var project = pjLoader.LoadFromFile(settings.ProjectPath);
-			Execute(project, renderer);
+			mgr.Project = pjLoader.LoadFromFile(settings.ProjectPath);
+			mgr.ProjectPath = settings.ProjectPath;
+			Execute(mgr, renderer);
 		}
 
-		private void Execute(Project project, IRenderer renderer)
+		private void Execute(ProcessingManager mgr, IRenderer renderer)
 		{
-			ArgumentNullException.ThrowIfNull(project);
+			ArgumentNullException.ThrowIfNull(mgr);
 			ArgumentNullException.ThrowIfNull(renderer);
+
+			if (mgr.Project == null)
+			{
+				throw new InvalidOperationException("No project loaded.");
+			}
 
 			// syntax
 			var syntax = new Syntax.SyntaxDef();
+			if (mgr.Project.Syntax != null)
 			{
 				var syntaxLoader = new Syntax.SyntaxLoader();
 
-				foreach (var syntaxPath in project.Syntax)
+				foreach (var syntaxPath in mgr.Project.Syntax)
 				{
-					var partialSyntax = syntaxLoader.LoadFromFile(syntaxPath);
+					var effectivePath = mgr.FindFile(syntaxPath, "syntax/" + syntaxPath, syntaxPath + Constants.SyntaxExtension, "syntax/" + syntaxPath + Constants.SyntaxExtension);
+					if (effectivePath == null)
+					{
+						throw new InvalidOperationException($"Syntax file not found: {syntaxPath}");
+					}
+
+					var partialSyntax = syntaxLoader.LoadFromFile(effectivePath);
 					syntax.Append(partialSyntax);
 				}
 			}
 
-			var mgr = new ProcessingManager(syntax);
-			var semProc = new SemanticsProcessor(mgr);
-
 			// semantics
 			var semantics = new Semantics.SemanticsDef();
+			if (mgr.Project.Semantics != null)
 			{
 				var semanticsLoader = new Semantics.SemanticsLoader(new(mgr));
 
-				foreach (var semanticsPath in project.Semantics)
+				foreach (var semanticsPath in mgr.Project.Semantics)
 				{
-					var partialSemantics = semanticsLoader.LoadFromFile(semanticsPath);
+					var effectivePath = mgr.FindFile(semanticsPath, "semantics/" + semanticsPath, semanticsPath + Constants.SemanticsExtension, "semantics/" + semanticsPath + Constants.SemanticsExtension);
+					if (effectivePath == null)
+					{
+						throw new InvalidOperationException($"Semantics file not found: {semanticsPath}");
+					}
+
+					var partialSemantics = semanticsLoader.LoadFromFile(effectivePath);
 					semantics.Append(partialSemantics);
 				}
 			}
 
-			var parser = new Parser(mgr);
+			var parser = new Syntax.Parser(mgr);
+			var semProc = new Semantics.SemanticsProcessor(mgr);
 
-			// TODO: parallelize this?
-			foreach (var sourceFile in project.Sources)
+			var finalSpans = new List<Documents.Span>();
+
+			if (mgr.Project.Sources != null)
 			{
-				var rawSpan = parser.Parse(sourceFile);
-				var span = semProc.Process(rawSpan);
+				// TODO: parallelize this?
+				foreach (var sourceFile in mgr.Project.Sources)
+				{
+					var effectivePath = mgr.FindFile(sourceFile, sourceFile + Constants.SourceExtension);
+					if (effectivePath == null)
+					{
+						throw new InvalidOperationException($"Content file not found: {sourceFile}");
+					}
 
-				// TODO: collect all resulting spans and processing messages
+					var source = File.ReadAllText(effectivePath);
+
+					var rawSpan = parser.Parse(syntax, source);
+					var span = semProc.Process(semantics, rawSpan);
+
+					finalSpans.Add(span);
+				}
 			}
 
-			// TODO: invoke renderer
+			var renderingController = new Rendering.RenderingController(renderer);
+			renderingController.Render(finalSpans.ToArray());
 		}
 	}
 }

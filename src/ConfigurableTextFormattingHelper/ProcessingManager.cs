@@ -11,31 +11,68 @@
 	/// </remarks>
 	internal sealed class ProcessingManager : IProcessingMessageList
 	{
-		public ProcessingManager(Syntax.SyntaxDef syntax)
-		{
-			ArgumentNullException.ThrowIfNull(syntax);
-
-			SyntaxEnvironment = new(syntax);
-		}
-
-		public Syntax.SyntaxEnvironment SyntaxEnvironment { get; set; }
-
-		public void LeaveSyntaxEnvironment()
-		{
-			if (SyntaxEnvironment.Parent == null)
-			{
-				throw new InvalidOperationException("The current syntax environment is the root environment.");
-			}
-
-			SyntaxEnvironment = SyntaxEnvironment.Parent;
-		}
-
-		public Syntax.SyntaxDef Syntax => SyntaxEnvironment.Syntax;
-
 		public void AddMessage(ProcessingMessage message) => messages.Add(message);
 
 		private readonly List<ProcessingMessage> messages = new();
 
 		public IReadOnlyList<ProcessingMessage> Messages => messages;
+
+		/// <summary>
+		/// Gets or sets the current project.
+		/// </summary>
+		public Projects.Project? Project { get; set; }
+
+		public string? ProjectPath { get; set; }
+
+		private IEnumerable<string> GetSearchPaths()
+		{
+			if (ProjectPath != null)
+			{
+				var pjDir = Path.GetDirectoryName(ProjectPath);
+				if (!string.IsNullOrEmpty(pjDir))
+				{
+					yield return pjDir;
+				}
+			}
+
+			var asmDir = Path.GetDirectoryName(typeof(ProcessingManager).Assembly.Location);
+			if (!string.IsNullOrEmpty(asmDir))
+			{
+				yield return Path.Join(asmDir, "config");
+			}
+		}
+
+		internal string? FindFile(params string[] pathCandidates)
+		{
+			var splitPathCandidates = pathCandidates.Select(pc => pc.Split('/')).ToArray();
+
+			string? FindInBasePath(string basePath)
+			{
+				foreach (var pc in splitPathCandidates)
+				{
+					var path = Path.Join(new[] { basePath }.Concat(pc).ToArray());
+					try
+					{
+						if (File.Exists(path))
+						{
+							return path;
+						}
+					}
+					catch { }
+				}
+				return null;
+			}
+
+			foreach (var bp in GetSearchPaths())
+			{
+				var foundPath = FindInBasePath(bp);
+				if (foundPath != null)
+				{
+					return foundPath;
+				}
+			}
+
+			return null;
+		}
 	}
 }

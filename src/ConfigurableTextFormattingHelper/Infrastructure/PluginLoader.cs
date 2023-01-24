@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using AssemblyLoadContext = System.Runtime.Loader.AssemblyLoadContext;
 
 namespace ConfigurableTextFormattingHelper.Infrastructure
 {
@@ -14,26 +15,54 @@ namespace ConfigurableTextFormattingHelper.Infrastructure
 
 			var pluginDirs = new List<PluginDirectory>();
 
-			foreach (var dllPath in Directory.EnumerateFiles(localPath, "*.dll", new EnumerationOptions
+			//AssemblyLoadContext.Default.Resolving += ResolveAssembly;
+			try
 			{
-				IgnoreInaccessible = true,
-				ReturnSpecialDirectories = false,
-				RecurseSubdirectories = true
-			}))
+				foreach (var dllPath in Directory.EnumerateFiles(localPath, "*.dll", new EnumerationOptions
+				{
+					IgnoreInaccessible = true,
+					ReturnSpecialDirectories = false,
+					RecurseSubdirectories = true
+				}))
+				{
+					var dllDir = Path.GetDirectoryName(dllPath);
+
+					var alc = new AssemblyLoadContext(dllPath, true);
+					alc.Resolving += (ctx, asmName) =>
+					{
+						var fullPath = Path.Join(dllDir, asmName.Name + ".dll");
+						if (File.Exists(fullPath))
+						{
+							return ctx.LoadFromAssemblyPath(fullPath);
+						}
+
+						return null;
+					};
+					try
+					{
+						Console.WriteLine($"Loading {dllPath} ...");
+						var pluginAssembly = alc.LoadFromAssemblyPath(dllPath); //Assembly.LoadFile(dllPath);
+
+						pluginDirs.Add(FindPlugins(pluginAssembly));
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine(ex);
+						alc.Unload();
+					}
+				}
+			}
+			finally
 			{
-				try
-				{
-					var pluginAssembly = Assembly.LoadFile(dllPath);
-
-					pluginDirs.Add(FindPlugins(pluginAssembly));
-				}
-				catch (Exception ex)
-				{
-
-				}
+				//AssemblyLoadContext.Default.Resolving -= ResolveAssembly;
 			}
 
 			return new(pluginDirs.SelectMany(pd => pd.Renderers));
+		}
+
+		private static Assembly? ResolveAssembly(AssemblyLoadContext alc, AssemblyName asmName)
+		{
+			return null;
 		}
 
 		private static PluginDirectory FindPlugins(Assembly pluginAssembly)

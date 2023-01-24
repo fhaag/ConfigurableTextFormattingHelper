@@ -1,6 +1,8 @@
-﻿namespace ConfigurableTextFormattingHelper.Documents
+﻿using ConfigurableTextFormattingHelper.Rendering;
+
+namespace ConfigurableTextFormattingHelper.Documents
 {
-	internal sealed class Span : ActiveTextElement
+	internal class Span : TextElement
 	{
 		private sealed class ElementList : System.Collections.ObjectModel.Collection<TextElement>
 		{
@@ -55,13 +57,31 @@
 			}
 		}
 
-		public Span(Syntax.SpanDef elementDef) : base(elementDef)
+		public Span()
 		{
 			Elements = new ElementList(this);
 		}
 
-		public new Syntax.SpanDef ElementDef => (Syntax.SpanDef)base.ElementDef;
-
 		public IList<TextElement> Elements { get; }
+
+		internal override void Render(IRenderer renderer)
+		{
+			// TODO: signal start and end of span?
+
+			foreach (var element in Elements)
+			{
+				element.Render(renderer);
+			}
+		}
+
+		public override TextElement CloneDeep()
+		{
+			var result = new Span();
+			foreach (var child in Elements)
+			{
+				result.Elements.Add(child.CloneDeep());
+			}
+			return result;
+		}
 	}
 }

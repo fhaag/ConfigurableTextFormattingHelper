@@ -1,1 +1,13 @@
-﻿
+﻿The author said:
+[I want a text processing engine that lets me write first, and apply formatting later.
+Where can I find such a thing?]
+
+The developer answered:
+[I think I have something that might interest you.
+Look at this:
+
+The Configurable Text Formatting Helper accepts text written in a simple syntax.
+It applies a series of replacements and outputs the formatted text in one out of multiple target formats.
+
+And the best thing is:
+It is fully configurable, from the input syntax to the replacement rules for each individual text element.]

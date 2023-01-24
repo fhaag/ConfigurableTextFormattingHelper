@@ -2,7 +2,7 @@
 
 namespace ConfigurableTextFormattingHelper.Renderers.Plain.CommonMark
 {
-	internal sealed class CommonMarkRenderer : IRenderer
+	internal sealed class CommonMarkRenderer : IRenderer, IDisposable
 	{
 		internal CommonMarkRenderer(TextWriter destination)
 		{
@@ -36,6 +36,11 @@ namespace ConfigurableTextFormattingHelper.Renderers.Plain.CommonMark
 				default:
 					throw new NotSupportedException($"Unsupported rendering instruction: {instruction}");
 			}
+		}
+
+		public void Dispose()
+		{
+			destination.Dispose();
 		}
 	}
 }

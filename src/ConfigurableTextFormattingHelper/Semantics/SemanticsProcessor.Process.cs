@@ -14,12 +14,37 @@
 					throw new InvalidOperationException("No semantics contexts defined.");
 				}
 
-				currentContext = semantics.Contexts.First();
+
+				currentContexts.Push(semantics.Contexts.First());
 			}
 
 			public SemanticsDef Semantics { get; }
 
-			private ContextDef currentContext;
+			private readonly Stack<ContextDef> currentContexts = new();
+
+			public void SwitchContext(string id)
+			{
+				ArgumentNullException.ThrowIfNull(id);
+
+				id = id.ToLowerInvariant();
+				var newCtxDef = Semantics.Contexts.FirstOrDefault(c => c.Id.ToLowerInvariant() == id);
+				if (newCtxDef == null)
+				{
+					throw new InvalidOperationException($"Context {id} is not defined.");
+				}
+
+				currentContexts.Push(newCtxDef);
+			}
+
+			public void SwitchContextBack()
+			{
+				if (currentContexts.Count <= 1)
+				{
+					throw new InvalidOperationException();
+				}
+
+				currentContexts.Pop();
+			}
 
 			public IEnumerable<Documents.TextElement> Digest(IEnumerable<Documents.TextElement> textElements)
 			{
@@ -31,6 +56,8 @@
 				{
 					if (te is Documents.IDefinedTextElement defEl)
 					{
+						var currentContext = currentContexts.Peek();
+
 						if (currentContext.Elements.TryGetValue(defEl.ElementDef.Id, out var elRule))
 						{
 							CurrentElement = te;

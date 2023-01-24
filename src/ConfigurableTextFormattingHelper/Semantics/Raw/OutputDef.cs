@@ -54,8 +54,10 @@
 
 		private SpanContentOutput CreateSpanContent(SemanticsProcessingManager processingManager)
 		{
-			// TODO: complete (Context)
-			return new();
+			return new()
+			{
+				ContextId = Context
+			};
 		}
 
 		private Output GuessOutput(SemanticsProcessingManager processingManager)

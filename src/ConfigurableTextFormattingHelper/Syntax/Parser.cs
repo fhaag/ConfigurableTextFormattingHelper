@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using ConfigurableTextFormattingHelper.Infrastructure;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ConfigurableTextFormattingHelper.Syntax
@@ -82,7 +83,8 @@ namespace ConfigurableTextFormattingHelper.Syntax
 						SaveVerbatimContent();
 
 						chIdx += endMatch.Length;
-						StoreArguments(endMatch, currentDefinedSpan.Arguments);
+						var args = ExtractArguments(endMatch);
+						currentDefinedSpan.Arguments.MergeEntries(args);
 						// TODO: if current syntax environment was started by this span, call processingManager.LeaveSyntaxEnvironment()
 						currentSpan = currentSpan.Parent;
 						continue;
@@ -99,17 +101,23 @@ namespace ConfigurableTextFormattingHelper.Syntax
 					{
 						case CommandDef cmdDef:
 							{
+								var args = ExtractArguments(elementMatch.Match);
 								var docElement = new Documents.Command(cmdDef);
-								StoreArguments(elementMatch.Match, docElement.Arguments);
+								docElement.Arguments.MergeEntries(args);
 								currentSpan.Elements.Add(docElement);
 							}
 							break;
 						case SpanDef spanDef:
 							{
-								var docElement = new Documents.DefinedSpan(spanDef);
-								StoreArguments(elementMatch.Match, docElement.Arguments);
-								currentSpan.Elements.Add(docElement);
+								var enclosingSpanOfSameType = currentSpan.FindEnclosingSpan(spanDef.ElementId);
 
+								var args = ExtractArguments(elementMatch.Match);
+								var newLevel = spanDef.DetermineLevel(enclosingSpanOfSameType?.Level, args);
+
+								var docElement = new Documents.DefinedSpan(spanDef, newLevel);
+								docElement.Arguments.MergeEntries(args);
+								currentSpan.Elements.Add(docElement);
+								
 								currentSpan = docElement;
 							}
 							// TODO: update syntax environment?
@@ -131,12 +139,16 @@ namespace ConfigurableTextFormattingHelper.Syntax
 			return currentSpan;
 		}
 
-		private void StoreArguments(Match match, IDictionary<string, string[]> destArguments)
+		private IReadOnlyDictionary<string, string[]> ExtractArguments(Match match)
 		{
+			var result = new Dictionary<string, string[]>();
+
 			foreach (var group in match.Groups.OfType<Group>().Where(g => !string.IsNullOrWhiteSpace(g.Name)))
 			{
-				destArguments[group.Name] = group.Captures.Select(c => c.Value).ToArray();
+				result[group.Name] = group.Captures.Select(c => c.Value).ToArray();
 			}
+
+			return result;
 		}
 	}
 }

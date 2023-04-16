@@ -2,56 +2,71 @@
 
 namespace ConfigurableTextFormattingHelper.Syntax.Raw
 {
+	using Infrastructure.Yaml;
+
 	internal class ElementDef
 	{
-		public string? Id { get; set; }
+		public string? RuleId { get; set; }
 
-		public List<string>? Start { get; set; }
+		private string FormattedId => RuleId ?? (ElementId != null ? $":{ElementId}:" : "<unnamed>");
 
-		public List<string>? End { get; set; }
+		public string? ElementId { get; set; }
 
-		public List<string>? Token { get; set; }
+		public List<RawMatchSettings>? Start { get; set; }
+
+		public List<RawMatchSettings>? End { get; set; }
+
+		public List<RawMatchSettings>? Match { get; set; }
+
+		public LevelPolicy? Level { get; set; }
 
 		public Syntax.ElementDef CreateElement()
 		{
-			return (Token, Start, End) switch
+			if (ElementId == null)
 			{
-				({ }, null, null) => CreateCommand(),
-				(null, { }, { }) => CreateSpan(),
-				_ => throw new NotSupportedException($"Failed to recognize syntax element type on element '{Id}'.")
+				throw new InvalidOperationException($"No element ID specified by rule '{FormattedId}'.");
+			}
+
+			return (Match, Start) switch
+			{
+				({ }, null) => CreateCommand(),
+				(null, { }) => CreateSpan(),
+				_ => throw new NotSupportedException($"Failed to recognize syntax element type on element '{FormattedId}'.")
 			};
 		}
 
 		private SpanDef CreateSpan()
 		{
-			if (Id == null)
+			if (ElementId == null)
 			{
-				throw new InvalidOperationException("No id assigned.");
+				throw new InvalidOperationException("No element id assigned.");
 			}
 			if (Start == null)
 			{
-				throw new InvalidOperationException($"No start patterns assigned on syntax element '{Id}'.");
-			}
-			if (End == null)
-			{
-				throw new InvalidOperationException($"No start patterns assigned on syntax element '{Id}'.");
+				throw new InvalidOperationException($"No start patterns assigned on syntax element '{FormattedId}'.");
 			}
 
-			return new(Id, Start, End);
+			return new(ElementId, Start, End ?? new(), Level)
+			{
+				RuleId = RuleId
+			};
 		}
 
 		private CommandDef CreateCommand()
 		{
-			if (Id == null)
+			if (ElementId == null)
 			{
-				throw new InvalidOperationException("No id assigned.");
+				throw new InvalidOperationException("No element id assigned.");
 			}
-			if (Token == null)
+			if (Match == null)
 			{
-				throw new InvalidOperationException($"No patterns assigned on syntax element '{Id}'.");
+				throw new InvalidOperationException($"No patterns assigned on syntax element '{FormattedId}'.");
 			}
 
-			return new(Id, Token);
+			return new(ElementId, Match)
+			{
+				RuleId = RuleId
+			};
 		}
 	}
 }

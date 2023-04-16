@@ -1,18 +1,33 @@
 ﻿--- # January syntax
 escape: \\
 elements:
-  - id: parbreak
-    token: (?:\r\n\r\n|\r\r|\n\n)
-  - id: newline
-    token: \s\s(?:\r\n|\r|\n)
-  - id: whitespace
-    token: (?:\r\n|\r|\n)
-  - id: textdash
-    token:
+  - ruleId: parbreak
+    elementId: parbreak
+    match: (?:\r\n\r\n|\r\r|\n\n)
+  - ruleId: newline
+    elementId: newline
+    match: \s\s(?:\r\n|\r|\n)
+  - ruleId: newline-to-whitespace
+    elementId: whitespace
+    match: (?:\r\n|\r|\n)
+  - ruleId: dash
+    elementId: textdash
+    match:
       - \s---?\s
       - (?<=\w)---?(?=\w)
-  - id: dictterm
-    token: \$(?<key>[A-Za-z0-9\-_]+)\$
-  - id: speech
+  - ruleId: dictterm
+    elementId: dictterm
+    match: \$(?<key>[A-Za-z0-9\-_]+)\$
+  - ruleId: speech
+    elementId: speech
     start: \[(?:(?<speaker>[A-Za-z0-9\-_]+):)?
     end: \]
+  - ruleId: absolute-section
+    elementId: section
+    start: (?:^|(?<=(?:\r|\n)))(?<headlineMarker>#+) +(?<title>[^\r\n]*)
+    level:
+      fromParameter: "|headlineMarker|"
+  - ruleId: nestable-section
+    elementId: section
+    start: (?:^|(?<=(?:\r|\n)))\{# +(?<title>[^\r\n]*)
+    end: #\}

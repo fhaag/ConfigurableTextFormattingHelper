@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConfigurableTextFormattingHelper.Semantics
+namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 {
 	/// <summary>
 	/// Includes the contents of another file.

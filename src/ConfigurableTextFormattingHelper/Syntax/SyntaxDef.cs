@@ -22,7 +22,7 @@ namespace ConfigurableTextFormattingHelper.Syntax
 
 		public void AddElement(ElementDef element)
 		{
-			var idx = elements.FindIndex(e => e.Id == element.Id);
+			var idx = elements.FindIndex(e => e.ElementId == element.ElementId);
 			if (idx >= 0)
 			{
 				elements[idx] = element;

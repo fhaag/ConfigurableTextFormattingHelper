@@ -1,4 +1,5 @@
 ﻿using ConfigurableTextFormattingHelper.Infrastructure;
+using ConfigurableTextFormattingHelper.Syntax;
 using SD = ConfigurableTextFormattingHelper.Syntax;
 
 namespace ConfigurableTextFormattingHelper.Tests.Syntax
@@ -62,6 +63,86 @@ escape:
 					.And.ContainSingle(ex => ex.ToString() == ExpectedRegexPattern(@"123456"))
 					.And.ContainSingle(ex => ex.ToString() == ExpectedRegexPattern(@"\(R:"));
 				sd.Elements.Should().BeEmpty("because the syntax contains no elements");
+			});
+		}
+
+		[Fact]
+		public void TestTokenWithPattern()
+		{
+			CheckLoadedSyntax(@"
+--- # syntax with a single token defined only by a pattern
+elements:
+  - elementId: a
+    ruleId: r1
+    match: abc
+", sd =>
+			{
+				sd.Elements.Should().HaveCount(1);
+
+				var elDef = sd.Elements[0].Should().BeOfType<CommandDef>().Which;
+				elDef.ElementId.Should().Be("a");
+				elDef.RuleId.Should().Be("r1");
+				elDef.FindInText("abc", 0).Should().Match<System.Text.RegularExpressions.Match>(m => m.Success && m.Value == "abc");
+			});
+		}
+
+		[Fact]
+		public void TestTokenWithPatternInObject()
+		{
+			CheckLoadedSyntax(@"
+--- # syntax with a single token defined by a pattern in an object
+elements:
+  - elementId: a
+    match:
+      pattern: abc
+", sd =>
+			{
+				sd.Elements.Should().HaveCount(1);
+
+				var elDef = sd.Elements[0].Should().BeOfType<CommandDef>().Which;
+				elDef.ElementId.Should().Be("a");
+				elDef.RuleId.Should().BeNull();
+				elDef.FindInText("abc", 0).Should().Match<System.Text.RegularExpressions.Match>(m => m.Success && m.Value == "abc");
+			});
+		}
+
+		[Fact]
+		public void TestTokenWithPatternInList()
+		{
+			CheckLoadedSyntax(@"
+--- # syntax with a single token defined by a pattern in a list
+elements:
+  - elementId: a
+    match:
+      - abc
+", sd =>
+			{
+				sd.Elements.Should().HaveCount(1);
+
+				var elDef = sd.Elements[0].Should().BeOfType<CommandDef>().Which;
+				elDef.ElementId.Should().Be("a");
+				elDef.RuleId.Should().BeNull();
+				elDef.FindInText("abc", 0).Should().Match<System.Text.RegularExpressions.Match>(m => m.Success && m.Value == "abc");
+			});
+		}
+
+		[Fact]
+		public void TestTokenWithPatternInObjectInList()
+		{
+			CheckLoadedSyntax(@"
+--- # syntax with a single token defined by a pattern in an object in a list
+elements:
+  - elementId: a
+    match:
+      - pattern: abc
+", sd =>
+			{
+				sd.Elements.Should().HaveCount(1);
+
+				var elDef = sd.Elements[0].Should().BeOfType<CommandDef>().Which;
+				elDef.ElementId.Should().Be("a");
+				elDef.RuleId.Should().BeNull();
+				elDef.FindInText("abc", 0).Should().Match<System.Text.RegularExpressions.Match>(m => m.Success && m.Value == "abc");
 			});
 		}
 	}

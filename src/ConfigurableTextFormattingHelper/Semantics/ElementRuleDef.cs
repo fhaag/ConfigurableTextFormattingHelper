@@ -1,4 +1,6 @@
-﻿namespace ConfigurableTextFormattingHelper.Semantics
+﻿using ConfigurableTextFormattingHelper.Semantics.OutputNodes;
+
+namespace ConfigurableTextFormattingHelper.Semantics
 {
 	internal sealed class ElementRuleDef
 	{

@@ -25,7 +25,7 @@
 		public override SyntaxDef Load(string rawData, SettingsFormat format)
 		{
 			ArgumentNullException.ThrowIfNull(rawData);
-
+			
 			var rawDef = deserializer.Value.Deserialize<Raw.SyntaxDef>(rawData);
 
 			var result = new SyntaxDef();

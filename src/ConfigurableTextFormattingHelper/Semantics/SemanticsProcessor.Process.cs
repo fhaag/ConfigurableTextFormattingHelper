@@ -58,7 +58,7 @@
 					{
 						var currentContext = currentContexts.Peek();
 
-						if (currentContext.Elements.TryGetValue(defEl.ElementDef.Id, out var elRule))
+						if (currentContext.Elements.TryGetValue(defEl.ElementDef.ElementId, out var elRule))
 						{
 							CurrentElement = te;
 

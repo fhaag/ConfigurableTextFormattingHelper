@@ -60,7 +60,7 @@
 			Write(TextElementBoundaryColor, "]", true);
 		}
 
-		public void AppendRenderingInstruction(string instruction)
+		public void AppendRenderingInstruction(string instruction, IReadOnlyDictionary<string, string[]> arguments)
 		{
 			Write(TextElementBoundaryColor, "[");
 			Write(TextElementColor, "RDINSTRUCTION");

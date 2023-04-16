@@ -1,4 +1,4 @@
-﻿namespace ConfigurableTextFormattingHelper.Semantics
+﻿namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 {
 	internal abstract class Output
 	{

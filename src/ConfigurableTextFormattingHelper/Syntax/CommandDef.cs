@@ -3,19 +3,20 @@
 namespace ConfigurableTextFormattingHelper.Syntax
 {
 	using Infrastructure;
+	using Infrastructure.Yaml;
 
 	/// <summary>
 	/// An atomic syntax element.
 	/// </summary>
 	internal sealed class CommandDef : ElementDef
 	{
-		public CommandDef(string id, IEnumerable<string> patterns) : base(id)
+		public CommandDef(string elementId, IEnumerable<RawMatchSettings> patterns) : base(elementId)
 		{
-			this.patterns.AddRange(patterns.Select(CreateRegex));
+			this.match.AddRange(patterns.Select(ms => ms.CreateMatchSettings()));
 		}
 
-		private readonly List<Regex> patterns = new();
+		private readonly List<MatchSettings> match = new();
 
-		public override Match? FindInText(string text, int charIndex) => patterns.FindMatch(text, charIndex);
+		public override Match? FindInText(string text, int charIndex) => match.FindMatch(text, charIndex);
 	}
 }

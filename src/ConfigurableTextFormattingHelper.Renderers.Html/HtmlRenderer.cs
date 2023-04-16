@@ -27,7 +27,7 @@ namespace ConfigurableTextFormattingHelper.Renderers.Html
 			currentParent.AppendChild(destination.CreateTextNode(literal));
 		}
 
-		public void AppendRenderingInstruction(string instruction)
+		public void AppendRenderingInstruction(string instruction, IReadOnlyDictionary<string, string[]> arguments)
 		{
 			switch (instruction)
 			{

@@ -1,4 +1,4 @@
-﻿namespace ConfigurableTextFormattingHelper.Semantics
+﻿namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 {
 	internal sealed class SpanContentOutput : Output
 	{
@@ -14,7 +14,7 @@
 				{
 					process.SwitchContext(ContextId!);
 				}
-				
+
 				var result = process.Digest(span.Elements);
 
 				if (HasContextSwitch)

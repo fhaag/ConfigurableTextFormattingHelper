@@ -4,17 +4,21 @@ namespace ConfigurableTextFormattingHelper.Documents
 {
 	internal sealed class RenderingInstruction : TextElement
 	{
-		public RenderingInstruction(string instruction)
+		public RenderingInstruction(string instruction, IEnumerable<KeyValuePair<string, string[]>> arguments)
 		{
 			ArgumentNullException.ThrowIfNull(instruction);
+			ArgumentNullException.ThrowIfNull(arguments);
 
 			Instruction = instruction;
+			Arguments = new Dictionary<string, string[]>(arguments);
 		}
 
 		public string Instruction { get; }
 
-		internal override void Render(IRenderer renderer) => renderer.AppendRenderingInstruction(Instruction);
+		public IReadOnlyDictionary<string, string[]> Arguments { get; }
 
-		public override TextElement CloneDeep() => new RenderingInstruction(Instruction);
+		internal override void Render(IRenderer renderer) => renderer.AppendRenderingInstruction(Instruction, Arguments);
+
+		public override TextElement CloneDeep() => new RenderingInstruction(Instruction, Arguments);
 	}
 }

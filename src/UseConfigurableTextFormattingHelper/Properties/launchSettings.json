@@ -1,0 +1,25 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {},
+      "distributionName": ""
+    },
+    "TXT": {
+      "commandName": "Project",
+      "commandLineArgs": "TXT -o samples/story1/output/story1.txt samples/story1/story1-project.ctfhp"
+    },
+    "MD": {
+      "commandName": "Project",
+      "commandLineArgs": "MD -o samples/story1/output/story1.md samples/story1/story1-project.ctfhp"
+    },
+    "HTML": {
+      "commandName": "Project",
+      "commandLineArgs": "HTML -o samples/story1/output/story1.html samples/story1/story1-project.ctfhp"
+    },
+    "Debug Structure": {
+      "commandName": "Project",
+      "commandLineArgs": "DEBUG -c samples/story1/story1-project.ctfhp"
+    }
+  }
+}

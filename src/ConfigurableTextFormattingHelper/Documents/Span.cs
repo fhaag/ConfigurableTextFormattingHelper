@@ -83,5 +83,7 @@ namespace ConfigurableTextFormattingHelper.Documents
 			}
 			return result;
 		}
+
+		public virtual DefinedSpan? FindEnclosingSpan(string spanId) => Parent?.FindEnclosingSpan(spanId);
 	}
 }

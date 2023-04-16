@@ -17,6 +17,12 @@ context:
       - id: textdash
         output:
           - verbatim: " – "
+      - id: section
+        output:
+          - type: header
+            level: $_level$
+            title: $title$
+          - type: spanContent
       - id: speech
         output:
           - verbatim: "“"

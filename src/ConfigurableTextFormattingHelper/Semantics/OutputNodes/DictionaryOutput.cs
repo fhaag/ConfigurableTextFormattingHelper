@@ -1,6 +1,6 @@
 ﻿using ConfigurableTextFormattingHelper.Documents;
 
-namespace ConfigurableTextFormattingHelper.Semantics
+namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 {
 	/// <summary>
 	/// Looks up an entry from a dictionary and outputs the most suitable variant of that term.

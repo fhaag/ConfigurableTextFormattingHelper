@@ -22,7 +22,7 @@ namespace ConfigurableTextFormattingHelper.Renderers.Plain.CommonMark
 			destination.Write(escapedLiteral);
 		}
 
-		public void AppendRenderingInstruction(string instruction)
+		public void AppendRenderingInstruction(string instruction, IReadOnlyDictionary<string, string[]> arguments)
 		{
 			switch (instruction)
 			{
@@ -33,9 +33,26 @@ namespace ConfigurableTextFormattingHelper.Renderers.Plain.CommonMark
 					destination.WriteLine();
 					destination.WriteLine();
 					break;
+				case "headline":
+					AppendHeadline(arguments);
+					break;
 				default:
 					throw new NotSupportedException($"Unsupported rendering instruction: {instruction}");
 			}
+		}
+
+		private void AppendHeadline(IReadOnlyDictionary<string, string[]> arguments)
+		{
+			destination.WriteLine();
+			destination.WriteLine();
+
+			if (!arguments.TryGetValue("level", out var strLevel))
+			{
+				strLevel = new[] { "" };
+			}
+
+			
+			destination.WriteLine();
 		}
 
 		public void Dispose()

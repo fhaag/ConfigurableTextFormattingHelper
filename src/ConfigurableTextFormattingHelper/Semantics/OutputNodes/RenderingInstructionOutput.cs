@@ -1,6 +1,6 @@
 ﻿using ConfigurableTextFormattingHelper.Documents;
 
-namespace ConfigurableTextFormattingHelper.Semantics
+namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 {
 	/// <summary>
 	/// Emits an instruction for the renderer.
@@ -22,6 +22,11 @@ namespace ConfigurableTextFormattingHelper.Semantics
 	/// <term><c>parbreak</c></term>
 	/// <description>Forces a paragraph break.</description>
 	/// </item>
+	/// <item>
+	/// <term><c>headline</c></term>
+	/// <description>Inserts a headline.
+	///   Usually accompanied by a <c>level</c> argument that indicates the nesting level (starting at <c>1</c>), as well as a <c>title</c> argument that specifies the headline text.</description>
+	/// </item>
 	/// </list>
 	/// </remarks>
 	internal sealed class RenderingInstructionOutput : Output
@@ -37,7 +42,11 @@ namespace ConfigurableTextFormattingHelper.Semantics
 
 		public override IEnumerable<TextElement> Generate(ISubstitutionProcess process, IReadOnlyDictionary<string, string[]> arguments)
 		{
-			yield return new Documents.RenderingInstruction(Instruction);
+			yield return new RenderingInstruction(Instruction, arguments);
 		}
+
+		private readonly Dictionary<string, string[]> arguments = new();
+
+		public IDictionary<string, string[]> Arguments => arguments;
 	}
 }

@@ -1,9 +1,14 @@
-﻿namespace ConfigurableTextFormattingHelper.Semantics.Raw
+﻿using YamlDotNet.RepresentationModel;
+
+namespace ConfigurableTextFormattingHelper.Semantics.Raw
 {
+	using OutputNodes;
 	using Infrastructure;
 
 	internal class OutputDef
 	{
+		#region settings
+
 		public string? Type { get; set; }
 
 		public string? RenderingInstruction { get; set; }
@@ -13,6 +18,10 @@
 		public string? Verbatim { get; set; }
 
 		public string? Context { get; set; }
+
+		public YamlNode? Arguments { get; set; }
+
+		#endregion
 
 		public Output CreateOutput(SemanticsProcessingManager processingManager)
 		{

@@ -9,7 +9,8 @@ namespace ConfigurableTextFormattingHelper.Infrastructure.Yaml
 		{
 			var builder = new DeserializerBuilder()
 				.WithNamingConvention(CamelCaseNamingConvention.Instance)
-				.WithTypeConverter(new SingleStringValueListAdapter());
+				.WithTypeConverter(new SingleStringValueListAdapter())
+				.WithTypeConverter(new MatcherAdapter());
 
 			if (modifyBuilder != null)
 			{

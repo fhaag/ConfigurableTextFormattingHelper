@@ -7,6 +7,6 @@
 	{
 		void AppendLiteral(string literal);
 
-		void AppendRenderingInstruction(string instruction);
+		void AppendRenderingInstruction(string instruction, IReadOnlyDictionary<string, string[]> arguments);
 	}
 }

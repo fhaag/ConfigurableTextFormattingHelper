@@ -1,6 +1,6 @@
 ﻿using ConfigurableTextFormattingHelper.Documents;
 
-namespace ConfigurableTextFormattingHelper.Semantics
+namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 {
 	/// <summary>
 	/// Output verbatim text.

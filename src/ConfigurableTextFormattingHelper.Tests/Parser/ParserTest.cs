@@ -4,6 +4,8 @@ using Doc = ConfigurableTextFormattingHelper.Documents;
 
 namespace ConfigurableTextFormattingHelper.Tests.Parser
 {
+	using Infrastructure.Yaml;
+
 	public sealed class ParserTest
 	{
 		private void CheckParseResult(SD.SyntaxDef syntax, string source, Action<Doc.Span> checkResult)
@@ -21,8 +23,8 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 		{
 			var result = new SD.SyntaxDef();
 			result.AddEscape("`");
-			result.AddElement(new SD.CommandDef("a", new[] { "_AA_" }));
-			result.AddElement(new SD.CommandDef("b", new[] { "%BBB%" }));
+			result.AddElement(new SD.CommandDef("a", new[] { new RawMatchSettings("_AA_") }));
+			result.AddElement(new SD.CommandDef("b", new[] { new RawMatchSettings("%BBB%") }));
 			return result;
 		}
 
@@ -30,8 +32,8 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 		{
 			var result = new SD.SyntaxDef();
 			result.AddEscape("--");
-			result.AddElement(new SD.SpanDef("s1", new[] { Regex.Escape("<<") }, new[] { Regex.Escape(">>") }));
-			result.AddElement(new SD.SpanDef("s2", new[] { "§(?<testval>[A-Z]{3,6})§" }, new[] { ":§" }));
+			result.AddElement(new SD.SpanDef("s1", new[] { new RawMatchSettings(Regex.Escape("<<")) }, new[] { new RawMatchSettings(Regex.Escape(">>")) }, null));
+			result.AddElement(new SD.SpanDef("s2", new[] { new RawMatchSettings("§(?<testval>[A-Z]{3,6})§") }, new[] { new RawMatchSettings(":§") }, null));
 			return result;
 		}
 
@@ -96,7 +98,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 				{
 					var cmd = span.Elements[i].Should().BeOfType<Doc.Command>().Which;
 					cmd.Parent.Should().Be(span);
-					cmd.ElementDef.Id.Should().Be(commandIds[i]);
+					cmd.ElementDef.ElementId.Should().Be(commandIds[i]);
 				}
 			});
 		}
@@ -107,7 +109,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 			CheckParseResult(CreateSimpleSyntax(), "_AA_AAbcd", span =>
 			{
 				span.Elements.Should().HaveCount(2).And.OnlyContain(e => e.Parent == span);
-				span.Elements[0].Should().BeOfType<Doc.Command>().Which.ElementDef.Id.Should().Be("a");
+				span.Elements[0].Should().BeOfType<Doc.Command>().Which.ElementDef.ElementId.Should().Be("a");
 				span.Elements[1].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("AAbcd");
 			});
 		}
@@ -119,7 +121,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 			{
 				span.Elements.Should().HaveCount(2).And.OnlyContain(e => e.Parent == span);
 				span.Elements[0].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("xxzxxz ");
-				span.Elements[1].Should().BeOfType<Doc.Command>().Which.ElementDef.Id.Should().Be("b");
+				span.Elements[1].Should().BeOfType<Doc.Command>().Which.ElementDef.ElementId.Should().Be("b");
 			});
 		}
 
@@ -130,7 +132,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 			{
 				span.Elements.Should().HaveCount(3).And.OnlyContain(e => e.Parent == span);
 				span.Elements[0].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("1234_");
-				span.Elements[1].Should().BeOfType<Doc.Command>().Which.ElementDef.Id.Should().Be("a");
+				span.Elements[1].Should().BeOfType<Doc.Command>().Which.ElementDef.ElementId.Should().Be("a");
 				span.Elements[2].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("ABC");
 			});
 		}
@@ -143,24 +145,24 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 				span.Elements.Should().HaveCount(2).And.OnlyContain(e => e.Parent == span);
 
 				var span1 = span.Elements[0].Should().BeOfType<Doc.DefinedSpan>().Which;
-				span1.ElementDef.Id.Should().Be("s1");
+				span1.ElementDef.ElementId.Should().Be("s1");
 				span1.Elements.Should().HaveCount(2).And.OnlyContain(e => e.Parent == span1);
 
 				var span1Child1 = span1.Elements[0].Should().BeOfType<Doc.DefinedSpan>().Which;
-				span1Child1.ElementDef.Id.Should().Be("s2");
+				span1Child1.ElementDef.ElementId.Should().Be("s2");
 				span1Child1.Arguments.Should().ContainKey("testval").WhoseValue.Should().BeEquivalentTo(new[] { "XXXX" });
 				span1Child1.Elements.Should().HaveCount(1).And.OnlyContain(e => e.Parent == span1Child1);
 
 				var innermost = span1Child1.Elements[0].Should().BeOfType<Doc.DefinedSpan>().Which;
-				innermost.ElementDef.Id.Should().Be("s1");
+				innermost.ElementDef.ElementId.Should().Be("s1");
 				innermost.Elements.Should().BeEmpty();
 
 				var span1Child2 = span1.Elements[1].Should().BeOfType<Doc.DefinedSpan>().Which;
-				span1Child2.ElementDef.Id.Should().Be("s1");
+				span1Child2.ElementDef.ElementId.Should().Be("s1");
 				span1Child2.Elements.Should().BeEmpty();
 
 				var span2 = span.Elements[1].Should().BeOfType<Doc.DefinedSpan>().Which;
-				span2.ElementDef.Id.Should().Be("s1");
+				span2.ElementDef.ElementId.Should().Be("s1");
 				span2.Elements.Should().BeEmpty();
 			});
 		}
@@ -175,20 +177,20 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 				span.Elements[0].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("ab");
 
 				var span1 = span.Elements[1].Should().BeOfType<Doc.DefinedSpan>().Which;
-				span1.ElementDef.Id.Should().Be("s1");
+				span1.ElementDef.ElementId.Should().Be("s1");
 				span1.Elements.Should().HaveCount(1).And.OnlyContain(e => e.Parent == span1);
 				span1.Elements[0].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("xyz");
 
 				span.Elements[2].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("def§AB");
 
 				var span2 = span.Elements[3].Should().BeOfType<Doc.DefinedSpan>().Which;
-				span2.ElementDef.Id.Should().Be("s2");
+				span2.ElementDef.ElementId.Should().Be("s2");
 				span2.Arguments.Should().ContainKey("testval").WhoseValue.Should().BeEquivalentTo(new[] { "ABC" });
 				span2.Elements.Should().HaveCount(2).And.OnlyContain(e => e.Parent == span2);
 				span2.Elements[0].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("1234");
 				
 				var span2Child1 = span2.Elements[1].Should().BeOfType<Doc.DefinedSpan>().Which;
-				span2Child1.ElementDef.Id.Should().Be("s1");
+				span2Child1.ElementDef.ElementId.Should().Be("s1");
 				span2Child1.Elements.Should().HaveCount(1).And.OnlyContain(e => e.Parent == span2Child1);
 				span2Child1.Elements[0].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be(" ");
 

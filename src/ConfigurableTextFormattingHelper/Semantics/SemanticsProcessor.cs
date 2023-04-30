@@ -25,7 +25,7 @@
 			var result = new Documents.Span();
 			foreach (var el in processedElements)
 			{
-				result.Elements.Add(el);
+				result.AddElement(el);
 			}
 			return result;
 		}

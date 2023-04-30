@@ -1,74 +1,108 @@
 ﻿using ConfigurableTextFormattingHelper.Rendering;
+using ConfigurableTextFormattingHelper.Syntax;
+using System.ComponentModel;
 
 namespace ConfigurableTextFormattingHelper.Documents
 {
 	internal class Span : TextElement
 	{
-		private sealed class ElementList : System.Collections.ObjectModel.Collection<TextElement>
+		public IReadOnlyList<IReadOnlyList<TextElement>> GetContent(string contentId)
 		{
-			public ElementList(Span owner)
+			if (contentElements.TryGetValue(contentId, out var content))
 			{
-				this.owner = owner;
+				return content;
 			}
 
-			private readonly Span owner;
+			return Array.Empty<IReadOnlyList<TextElement>>();
+		}
 
-			protected override void InsertItem(int index, TextElement item)
+		public IReadOnlyList<TextElement> GetDefaultContent() => GetContent(SpanDef.DefaultContentId).FirstOrDefault() ?? Array.Empty<TextElement>();
+
+		private readonly Dictionary<string, List<List<TextElement>>> contentElements = new();
+
+		private string? currentContentId;
+
+		protected virtual string InitialContentId => SpanDef.DefaultContentId;
+
+		public string CurrentContentId
+		{
+			get
 			{
-				if (item.Parent != null)
+				if (currentContentId == null)
 				{
-					throw new ArgumentException("The text element is already a part of a span.");
+					SwitchToContent(InitialContentId);
 				}
 
-				base.InsertItem(index, item);
-
-				item.Parent = owner;
-			}
-
-			protected override void RemoveItem(int index)
-			{
-				this[index].Parent = null;
-
-				base.RemoveItem(index);
-			}
-
-			protected override void SetItem(int index, TextElement item)
-			{
-				if (item.Parent != null)
-				{
-					throw new ArgumentException("The text element to assign is already a part of a span.");
-				}
-
-				this[index].Parent = null;
-
-				base.SetItem(index, item);
-
-				item.Parent = owner;
-			}
-
-			protected override void ClearItems()
-			{
-				foreach (var item in this)
-				{
-					item.Parent = null;
-				}
-
-				base.ClearItems();
+				return currentContentId!;
 			}
 		}
 
-		public Span()
+		protected void SwitchToContent(string contentId, ContentMode mode)
 		{
-			Elements = new ElementList(this);
+			if (!contentElements.TryGetValue(contentId, out var contentItems))
+			{
+				contentItems = new();
+				contentElements[contentId] = contentItems;
+			}
+
+			switch (mode)
+			{
+				case ContentMode.Once:
+					if (contentItems.Count > 0)
+					{
+						throw new InvalidOperationException($"Only one content with ID {contentId} is permitted.");
+					}
+					else
+					{
+						contentItems.Add(new());
+					}
+					break;
+				case ContentMode.Append:
+					if (contentItems.Count <= 0)
+					{
+						contentItems.Add(new());
+					}
+					break;
+				case ContentMode.Multi:
+					contentItems.Add(new());
+					break;
+				default:
+					throw new InvalidEnumArgumentException(nameof(mode), (int)mode, typeof(ContentMode));
+			}
+
+			currentContentId = contentId;
 		}
 
-		public IList<TextElement> Elements { get; }
+		public virtual void SwitchToContent(string contentId)
+		{
+			SwitchToContent(contentId, ContentMode.Append);
+		}
+
+		private List<TextElement> CurrentContent
+		{
+			get
+			{
+				return contentElements[CurrentContentId][^1];
+			}
+		}
+
+		public void AddElement(TextElement element)
+		{
+			ArgumentNullException.ThrowIfNull(element);
+			if (element.Parent != null)
+			{
+				throw new ArgumentException("The element is already attached to a document tree.");
+			}
+
+			CurrentContent.Add(element);
+			element.Parent = this;
+		}
 
 		internal override void Render(IRenderer renderer)
 		{
 			// TODO: signal start and end of span?
 
-			foreach (var element in Elements)
+			foreach (var element in GetDefaultContent())
 			{
 				element.Render(renderer);
 			}
@@ -77,11 +111,25 @@ namespace ConfigurableTextFormattingHelper.Documents
 		public override TextElement CloneDeep()
 		{
 			var result = new Span();
-			foreach (var child in Elements)
-			{
-				result.Elements.Add(child.CloneDeep());
-			}
+
+			CloneContent(result);
+
 			return result;
+		}
+
+		protected void CloneContent(Span destination)
+		{
+			foreach (var content in contentElements)
+			{
+				var clonedContent = new List<List<TextElement>>();
+
+				foreach (var item in content.Value)
+				{
+					clonedContent.Add(item.Select(te => te.CloneDeep()).ToList());
+				}
+
+				destination.contentElements[content.Key] = clonedContent;
+			}
 		}
 
 		public virtual DefinedSpan? FindEnclosingSpan(string spanId) => Parent?.FindEnclosingSpan(spanId);

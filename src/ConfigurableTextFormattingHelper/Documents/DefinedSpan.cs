@@ -8,6 +8,8 @@
 
 			ElementDef = elementDef;
 			Level = level;
+
+			SwitchToContent(elementDef.InitialContent);
 		}
 
 		public Syntax.SpanDef ElementDef { get; }
@@ -25,10 +27,9 @@
 		public override TextElement CloneDeep()
 		{
 			var result = new DefinedSpan(ElementDef, Level);
-			foreach (var child in Elements)
-			{
-				result.Elements.Add(child.CloneDeep());
-			}
+
+			CloneContent(result);
+
 			return result;
 		}
 
@@ -41,5 +42,13 @@
 
 			return base.FindEnclosingSpan(spanId);
 		}
+
+		public override void SwitchToContent(string contentId)
+		{
+			var contentDef = ElementDef.GetContentDefinition(contentId);
+			SwitchToContent(contentId, contentDef.Mode);
+		}
+
+		protected override string InitialContentId => ElementDef.InitialContent;
 	}
 }

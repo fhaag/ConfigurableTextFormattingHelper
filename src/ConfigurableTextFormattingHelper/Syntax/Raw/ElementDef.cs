@@ -20,6 +20,12 @@ namespace ConfigurableTextFormattingHelper.Syntax.Raw
 
 		public LevelPolicy? Level { get; set; }
 
+		public string? InitialContent { get; set; }
+
+		public List<ContentSwitchDef>? ContentSwitches { get; set; }
+
+		public List<ContentDef>? ContentSettings { get; set; }
+
 		public Syntax.ElementDef CreateElement()
 		{
 			if (ElementId == null)
@@ -46,7 +52,7 @@ namespace ConfigurableTextFormattingHelper.Syntax.Raw
 				throw new InvalidOperationException($"No start patterns assigned on syntax element '{FormattedId}'.");
 			}
 
-			return new(ElementId, Start, End ?? new(), Level)
+			return new(ElementId, Start, End ?? new(), ContentSettings, InitialContent, ContentSwitches, Level)
 			{
 				RuleId = RuleId
 			};

@@ -1,8 +1,12 @@
 ﻿namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 {
+	using Syntax;
+
 	internal sealed class SpanContentOutput : Output
 	{
 		public string? ContextId { get; init; }
+
+		public string? ContentId { get; init; }
 
 		public bool HasContextSwitch => ContextId != null;
 
@@ -15,7 +19,10 @@
 					process.SwitchContext(ContextId!);
 				}
 
-				var result = process.Digest(span.Elements);
+				var effectiveContentId = ContentId ?? SpanDef.DefaultContentId;
+				var contentItems = span.GetContent(effectiveContentId);
+				// TODO: retrieve other than first content?
+				var result = process.Digest(contentItems.FirstOrDefault() ?? Array.Empty<Documents.TextElement>());
 
 				if (HasContextSwitch)
 				{

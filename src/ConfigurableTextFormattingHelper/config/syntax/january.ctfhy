@@ -24,10 +24,42 @@ elements:
     end: \]
   - ruleId: absolute-section
     elementId: section
-    start: (?:^|(?<=(?:\r|\n)))(?<headlineMarker>#+) +(?<title>[^\r\n]*)
+    start: (?:^|(?<=(?:\r|\n)))(?<headlineMarker>#+) +
     level:
       fromParameter: "|headlineMarker|"
+    initialContent: title
+    contentSwitches:
+      - from: title
+        to: shortTitle
+        match: (?:\r\n|\r|\n)\[
+      - from: title
+        to: default
+        match: (?:\r\n|\r|\n)+
+      - from: shortTitle
+        to: default
+        match: \](?:\r\n|\r|\n)+
+    contentSettings:
+      - id: title
+        mode: once
+      - id: shortTitle
+        mode: once
   - ruleId: nestable-section
     elementId: section
-    start: (?:^|(?<=(?:\r|\n)))\{# +(?<title>[^\r\n]*)
+    start: (?:^|(?<=(?:\r|\n)))\{# +
     end: #\}
+    initialContent: title
+    contentSwitches:
+      - from: title
+        to: shortTitle
+        match: (?:\r\n|\r|\n)\[
+      - from: title
+        to: default
+        match: (?:\r\n|\r|\n)+
+      - from: shortTitle
+        to: default
+        match: \](?:\r\n|\r|\n)+
+    contentSettings:
+      - id: title
+        mode: once
+      - id: shortTitle
+        mode: once

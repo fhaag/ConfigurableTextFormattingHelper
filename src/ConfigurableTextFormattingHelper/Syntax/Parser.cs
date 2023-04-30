@@ -27,6 +27,7 @@ namespace ConfigurableTextFormattingHelper.Syntax
 
 			// TODO: get "global" root span def from elsewhere?
 			Documents.Span currentSpan = new();
+
 			StringBuilder currentLiteral = new();
 
 			var chIdx = 0;
@@ -51,7 +52,7 @@ namespace ConfigurableTextFormattingHelper.Syntax
 			{
 				if (currentLiteral.Length > 0)
 				{
-					currentSpan.Elements.Add(new Documents.Literal(currentLiteral.ToString()));
+					currentSpan.AddElement(new Documents.Literal(currentLiteral.ToString()));
 					currentLiteral.Clear();
 				}
 			}
@@ -72,6 +73,16 @@ namespace ConfigurableTextFormattingHelper.Syntax
 
 				if (currentSpan is Documents.DefinedSpan currentDefinedSpan)
 				{
+					if (currentDefinedSpan.ElementDef?.FindContentSwitchInText(str, chIdx, currentSpan.CurrentContentId) is { } contentSwitchMatch)
+					{
+						currentSpan.SwitchToContent(contentSwitchMatch.NewContentId);
+
+						chIdx += contentSwitchMatch.Match.Length;
+						var args = ExtractArguments(contentSwitchMatch.Match);
+						currentDefinedSpan.Arguments.MergeEntries(args);
+						continue;
+					}
+
 					if (currentDefinedSpan.ElementDef?.FindEndInText(str, chIdx) is { } endMatch)
 					{
 						if (currentSpan.Parent == null)
@@ -104,7 +115,7 @@ namespace ConfigurableTextFormattingHelper.Syntax
 								var args = ExtractArguments(elementMatch.Match);
 								var docElement = new Documents.Command(cmdDef);
 								docElement.Arguments.MergeEntries(args);
-								currentSpan.Elements.Add(docElement);
+								currentSpan.AddElement(docElement);
 							}
 							break;
 						case SpanDef spanDef:
@@ -116,7 +127,7 @@ namespace ConfigurableTextFormattingHelper.Syntax
 
 								var docElement = new Documents.DefinedSpan(spanDef, newLevel);
 								docElement.Arguments.MergeEntries(args);
-								currentSpan.Elements.Add(docElement);
+								currentSpan.AddElement(docElement);
 								
 								currentSpan = docElement;
 							}

@@ -74,9 +74,9 @@
 					else if (te is Documents.Span spanEl)
 					{
 						var newSpan = new Documents.Span();
-						foreach (var child in Digest(spanEl.Elements))
+						foreach (var child in Digest(spanEl.GetDefaultContent()))
 						{
-							newSpan.Elements.Add(child);
+							newSpan.AddElement(child);
 						}
 						result.Add(newSpan);
 					}

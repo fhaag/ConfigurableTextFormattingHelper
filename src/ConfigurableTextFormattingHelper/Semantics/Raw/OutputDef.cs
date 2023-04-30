@@ -19,6 +19,8 @@ namespace ConfigurableTextFormattingHelper.Semantics.Raw
 
 		public string? Context { get; set; }
 
+		public string? Content { get; set; }
+
 		public YamlNode? Arguments { get; set; }
 
 		#endregion
@@ -65,7 +67,8 @@ namespace ConfigurableTextFormattingHelper.Semantics.Raw
 		{
 			return new()
 			{
-				ContextId = Context
+				ContextId = Context,
+				ContentId = Content
 			};
 		}
 

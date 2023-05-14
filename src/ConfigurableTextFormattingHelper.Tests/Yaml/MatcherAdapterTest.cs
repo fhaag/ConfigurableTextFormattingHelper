@@ -1,5 +1,28 @@
-﻿using ConfigurableTextFormattingHelper.Infrastructure.Yaml;
-using YamlDotNet.Serialization.NamingConventions;
+﻿/*
+MIT License
+
+Copyright (c) 2023 The Configurable Text Formatting Helper Authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+ */
+
+using ConfigurableTextFormattingHelper.Infrastructure.Yaml;
 using YamlDotNet.Serialization;
 
 namespace ConfigurableTextFormattingHelper.Tests.Yaml
@@ -100,73 +123,6 @@ match:
 			});
 		}
 
-		/*
-		 * This test case produces an infinite loop:
-		 * 
-		 * Der aktive Testlauf wurde abgebrochen. Grund: Der Testhostprozess ist abgestürzt. : Stack overflow.
-   at YamlDotNet.Serialization.BuilderSkeleton`1[[System.__Canon, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]..ctor(YamlDotNet.Serialization.ITypeResolver)
-   at YamlDotNet.Serialization.DeserializerBuilder..ctor()
-   at ConfigurableTextFormattingHelper.Infrastructure.Yaml.DeserializerProvider.Build(System.Func`2<YamlDotNet.Serialization.DeserializerBuilder,YamlDotNet.Serialization.DeserializerBuilder>)
-   at ConfigurableTextFormattingHelper.Infrastructure.Yaml.MatcherAdapter.ReadYaml(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.NodeDeserializers.TypeConverterNodeDeserializer.Deserialize(YamlDotNet.Core.IParser, System.Type, System.Func`3<YamlDotNet.Core.IParser,System.Type,System.Object>, System.Object ByRef)
-   at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.ValueDeserializers.AliasValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.Deserializer.Deserialize(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.Deserializer.Deserialize[[System.__Canon, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]](YamlDotNet.Core.IParser)
-   at ConfigurableTextFormattingHelper.Infrastructure.Yaml.MatcherAdapter.ReadYaml(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.NodeDeserializers.TypeConverterNodeDeserializer.Deserialize(YamlDotNet.Core.IParser, System.Type, System.Func`3<YamlDotNet.Core.IParser,System.Type,System.Object>, System.Object ByRef)
-   at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.ValueDeserializers.AliasValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.Deserializer.Deserialize(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.Deserializer.Deserialize[[System.__Canon, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]](YamlDotNet.Core.IParser)
-   at ConfigurableTextFormattingHelper.Infrastructure.Yaml.MatcherAdapter.ReadYaml(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.NodeDeserializers.TypeConverterNodeDeserializer.Deserialize(YamlDotNet.Core.IParser, System.Type, System.Func`3<YamlDotNet.Core.IParser,System.Type,System.Object>, System.Object ByRef)
-   at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.ValueDeserializers.AliasValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.Deserializer.Deserialize(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.Deserializer.Deserialize[[System.__Canon, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]](YamlDotNet.Core.IParser)
-   at ConfigurableTextFormattingHelper.Infrastructure.Yaml.MatcherAdapter.ReadYaml(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.NodeDeserializers.TypeConverterNodeDeserializer.Deserialize(YamlDotNet.Core.IParser, System.Type, System.Func`3<YamlDotNet.Core.IParser,System.Type,System.Object>, System.Object ByRef)
-   at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.ValueDeserializers.AliasValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.Deserializer.Deserialize(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.Deserializer.Deserialize[[System.__Canon, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]](YamlDotNet.Core.IParser)
-   at ConfigurableTextFormattingHelper.Infrastructure.Yaml.MatcherAdapter.ReadYaml(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.NodeDeserializers.TypeConverterNodeDeserializer.Deserialize(YamlDotNet.Core.IParser, System.Type, System.Func`3<YamlDotNet.Core.IParser,System.Type,System.Object>, System.Object ByRef)
-   at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.ValueDeserializers.AliasValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.Deserializer.Deserialize(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.Deserializer.Deserialize[[System.__Canon, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]](YamlDotNet.Core.IParser)
-   at ConfigurableTextFormattingHelper.Infrastructure.Yaml.MatcherAdapter.ReadYaml(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.NodeDeserializers.TypeConverterNodeDeserializer.Deserialize(YamlDotNet.Core.IParser, System.Type, System.Func`3<YamlDotNet.Core.IParser,System.Type,System.Object>, System.Object ByRef)
-   at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.ValueDeserializers.AliasValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.Deserializer.Deserialize(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.Deserializer.Deserialize[[System.__Canon, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]](YamlDotNet.Core.IParser)
-   at ConfigurableTextFormattingHelper.Infrastructure.Yaml.MatcherAdapter.ReadYaml(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.NodeDeserializers.TypeConverterNodeDeserializer.Deserialize(YamlDotNet.Core.IParser, System.Type, System.Func`3<YamlDotNet.Core.IParser,System.Type,System.Object>, System.Object ByRef)
-   at YamlDotNet.Serialization.ValueDeserializers.NodeValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.ValueDeserializers.AliasValueDeserializer.DeserializeValue(YamlDotNet.Core.IParser, System.Type, YamlDotNet.Serialization.Utilities.SerializerState, YamlDotNet.Serialization.IValueDeserializer)
-   at YamlDotNet.Serialization.Deserializer.Deserialize(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.Deserializer.Deserialize[[System.__Canon, System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]](YamlDotNet.Core.IParser)
-   at ConfigurableTextFormattingHelper.Infrastructure.Yaml.MatcherAdapter.ReadYaml(YamlDotNet.Core.IParser, System.Type)
-   at YamlDotNet.Serialization.NodeDeserializers.TypeConverterN
-
-Der Testlauf wurde mit dem Fehler System.Exception: One or more errors occurred.
- ---> System.Exception: Unable to read data from the transport connection: Eine vorhandene Verbindung wurde vom Remotehost geschlossen..
- ---> System.Exception: Eine vorhandene Verbindung wurde vom Remotehost geschlossen.
-   at System.Net.Sockets.NetworkStream.Read(Span`1 buffer)
-   --- End of inner exception stack trace ---
-   at System.Net.Sockets.NetworkStream.Read(Span`1 buffer)
-   at System.Net.Sockets.NetworkStream.ReadByte()
-   at System.IO.BinaryReader.Read7BitEncodedInt()
-   at System.IO.BinaryReader.ReadString()
-   at Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.LengthPrefixCommunicationChannel.NotifyDataAvailable()
-   at Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.TcpClientExtensions.MessageLoopAsync(TcpClient client, ICommunicationChannel channel, Action`1 errorHandler, CancellationToken cancellationToken)
-   --- End of inner exception stack trace --- abgebrochen.
-		 */
-		// run with:
-		// dotnet test ConfigurableTextFormattingHelper.Tests.dll -v n --filter "FullyQualifiedName~MatcherAdapterTest&FullyQualifiedName~TestMultiListObjectMatch"
 		[Fact]
 		public void TestMultiListObjectMatch()
 		{

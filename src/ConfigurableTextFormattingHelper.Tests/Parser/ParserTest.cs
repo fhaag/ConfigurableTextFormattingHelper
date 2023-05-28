@@ -351,5 +351,54 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 				span.Should().BeSameDocumentAs(expectedTree);
 			});
 		}
+
+		[Fact]
+		public void TestImplicitlyNestedDifferentSpans()
+		{
+			var syntax = new SD.SyntaxDef();
+			syntax.AddElement(new SD.SpanDef("s1",
+				new[] { new MatchSettings(":1:") },
+				null,
+				level: new(1)));
+			syntax.AddElement(new SD.SpanDef("s1",
+				new[] { new MatchSettings(":2:") },
+				null,
+				level: new(2)));
+			syntax.AddElement(new SD.SpanDef("s2",
+				new[] { new MatchSettings("-1-") },
+				null,
+				level: new(1)));
+			syntax.AddElement(new SD.SpanDef("s2",
+				new[] { new MatchSettings("-2-") },
+				null,
+				level: new(2)));
+
+			CheckParseResult(syntax, "A:1:B-1-C-2-D:2:E-1-F:1:G", span =>
+			{
+				var expectedTree = ExpectedNode.Span(
+					ExpectedNode.Literal("A"),
+					ExpectedNode.DefinedSpan("s1", 1,
+						ExpectedNode.Literal("B"),
+						ExpectedNode.DefinedSpan("s2", 1,
+							ExpectedNode.Literal("C"),
+							ExpectedNode.DefinedSpan("s2", 2,
+								ExpectedNode.Literal("D"),
+								ExpectedNode.DefinedSpan("s1", 2,
+									ExpectedNode.Literal("E")
+									)
+								)
+							),
+						ExpectedNode.DefinedSpan("s2", 1,
+							ExpectedNode.Literal("F")
+							)
+						),
+					ExpectedNode.DefinedSpan("s1", 1,
+						ExpectedNode.Literal("G")
+						)
+					);
+
+				span.Should().BeSameDocumentAs(expectedTree);
+			});
+		}
 	}
 }

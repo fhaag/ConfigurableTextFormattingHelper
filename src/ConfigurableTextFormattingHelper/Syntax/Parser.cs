@@ -149,6 +149,35 @@ namespace ConfigurableTextFormattingHelper.Syntax
 								var args = ExtractArguments(elementMatch.Match);
 								var newLevel = spanDef.DetermineLevel(enclosingSpanOfSameType?.Level, args);
 
+								if (enclosingSpanOfSameType?.Level >= newLevel)
+								{
+									while (true)
+									{
+										var newEnclosingSpanOfSameType = enclosingSpanOfSameType.Parent?.FindEnclosingSpan(spanDef.ElementId);
+										if (newEnclosingSpanOfSameType != null)
+										{
+											if (newEnclosingSpanOfSameType.Level < newLevel)
+											{
+												currentSpan = enclosingSpanOfSameType.Parent!;
+												break;
+											}
+											else
+											{
+												enclosingSpanOfSameType = newEnclosingSpanOfSameType;
+											}
+										}
+										else
+										{
+											if (enclosingSpanOfSameType.Parent == null)
+											{
+												throw new InvalidOperationException("The enclosing span is the root node.");
+											}
+											currentSpan = enclosingSpanOfSameType.Parent;
+											break;
+										}
+									}
+								}
+
 								var docElement = new Documents.DefinedSpan(spanDef, newLevel);
 								docElement.Arguments.MergeEntries(args);
 								currentSpan.AddElement(docElement);
@@ -171,7 +200,7 @@ namespace ConfigurableTextFormattingHelper.Syntax
 
 			SaveVerbatimContent();
 
-			return currentSpan;
+			return currentSpan.Root ?? throw new InvalidOperationException("No span was generated.");
 		}
 
 		private IReadOnlyDictionary<string, string[]> ExtractArguments(Match match)

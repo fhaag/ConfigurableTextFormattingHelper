@@ -26,11 +26,29 @@ namespace ConfigurableTextFormattingHelper.Syntax
 {
 	using Infrastructure;
 
-	internal class LevelPolicy
+	public sealed class LevelPolicy
 	{
-		public string? FromParameter { get; set; }
+		public LevelPolicy()
+		{
+		}
 
-		public int? Value { get; set; }
+		public LevelPolicy(string fromParameter)
+		{
+			ArgumentNullException.ThrowIfNull(fromParameter);
+
+			FromParameter = fromParameter;
+		}
+
+		public LevelPolicy(Int32 value)
+		{
+			ArgumentNullException.ThrowIfNull(value);
+
+			Value = value;
+		}
+
+		public string? FromParameter { get; private set; }
+
+		public int? Value { get; private set; }
 
 		public int DetermineLevel(int? enclosingLevel, IReadOnlyDictionary<string, string[]> arguments)
 		{

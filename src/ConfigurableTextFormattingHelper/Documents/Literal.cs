@@ -40,5 +40,10 @@ namespace ConfigurableTextFormattingHelper.Documents
 		internal override void Render(IRenderer renderer) => renderer.AppendLiteral(Text);
 
 		public override TextElement CloneDeep() => new Literal(Text);
+
+		protected override string GetDebugInfo()
+		{
+			return "'" + (Text.Length > 10 ? Text.Substring(0, 10) + "..." : Text) + "'";
+		}
 	}
 }

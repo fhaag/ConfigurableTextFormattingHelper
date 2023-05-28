@@ -32,11 +32,22 @@ namespace ConfigurableTextFormattingHelper.Syntax.Raw
 
 		public Syntax.LevelPolicy CreateLevelPolicy()
 		{
-			return new()
+			if (Value.HasValue)
 			{
-				FromParameter = FromParameter,
-				Value = Value
-			};
+				if (!string.IsNullOrWhiteSpace(FromParameter))
+				{
+					throw new InvalidOperationException("The level cannot be defined by a value and a parameter source at a time.");
+				}
+
+				return new(Value.Value);
+			}
+
+			if (!string.IsNullOrWhiteSpace(FromParameter))
+			{
+				return new(FromParameter);
+			}
+
+			return new();
 		}
 	}
 }

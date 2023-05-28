@@ -44,5 +44,10 @@ namespace ConfigurableTextFormattingHelper.Documents
 		internal override void Render(IRenderer renderer) => renderer.AppendRenderingInstruction(Instruction, Arguments);
 
 		public override TextElement CloneDeep() => new RenderingInstruction(Instruction, Arguments);
+
+		protected override string GetDebugInfo()
+		{
+			return Instruction;
+		}
 	}
 }

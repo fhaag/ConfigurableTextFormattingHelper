@@ -28,13 +28,15 @@ using Doc = ConfigurableTextFormattingHelper.Documents;
 
 namespace ConfigurableTextFormattingHelper.Tests.Parser
 {
-	using Infrastructure.Yaml;
+	using TestInfrastructure;
+	using ConfigurableTextFormattingHelper.Documents;
+	using ConfigurableTextFormattingHelper.Infrastructure;
 
 	public sealed class ParserTest
 	{
 		private void CheckParseResult(SD.SyntaxDef syntax, string source, Action<Doc.Span> checkResult)
 		{
-			var parser = new ConfigurableTextFormattingHelper.Syntax.Parser(new ProcessingManager());
+			var parser = new SD.Parser(new ProcessingManager());
 
 			var span = parser.Parse(syntax, source);
 
@@ -47,8 +49,8 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 		{
 			var result = new SD.SyntaxDef();
 			result.AddEscape("`");
-			result.AddElement(new SD.CommandDef("a", new[] { new RawMatchSettings("_AA_") }));
-			result.AddElement(new SD.CommandDef("b", new[] { new RawMatchSettings("%BBB%") }));
+			result.AddElement(new SD.CommandDef("a", new[] { new MatchSettings("_AA_".ToPreciseLocationStartRegex()) }));
+			result.AddElement(new SD.CommandDef("b", new[] { new MatchSettings("%BBB%".ToPreciseLocationStartRegex()) }));
 			return result;
 		}
 
@@ -56,8 +58,14 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 		{
 			var result = new SD.SyntaxDef();
 			result.AddEscape("--");
-			result.AddElement(new SD.SpanDef("s1", new[] { new RawMatchSettings(Regex.Escape("<<")) }, new[] { new RawMatchSettings(Regex.Escape(">>")) }, null));
-			result.AddElement(new SD.SpanDef("s2", new[] { new RawMatchSettings("§(?<testval>[A-Z]{3,6})§") }, new[] { new RawMatchSettings(":§") }, null));
+			result.AddElement(new SD.SpanDef("s1",
+				new[] { new MatchSettings(Regex.Escape("<<").ToPreciseLocationStartRegex()) },
+				new[] { new MatchSettings(Regex.Escape(">>").ToPreciseLocationStartRegex()) },
+				null));
+			result.AddElement(new SD.SpanDef("s2",
+				new[] { new MatchSettings("§(?<testval>[A-Z]{3,6})§".ToPreciseLocationStartRegex()) },
+				new[] { new MatchSettings(":§".ToPreciseLocationStartRegex()) },
+				null));
 			return result;
 		}
 
@@ -85,7 +93,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 				var content = span.GetDefaultContent();
 				content.Should().HaveCount(1);
 				var literal = content.First().Should().BeOfType<Doc.Literal>().Which;
-				literal.Parent.Should().Be(span);
+				literal.Parent.Should().BeSameAs(span);
 				literal.Text.Should().Be(sourceText);
 			});
 		}
@@ -105,7 +113,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 				var content = span.GetDefaultContent();
 				content.Should().HaveCount(1);
 				var literal = content.First().Should().BeOfType<Doc.Literal>().Which;
-				literal.Parent.Should().Be(span);
+				literal.Parent.Should().BeSameAs(span);
 				literal.Text.Should().Be(resultText);
 			});
 		}
@@ -124,7 +132,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 				for (var i = 0; i < commandIds.Length; i++)
 				{
 					var cmd = content[i].Should().BeOfType<Doc.Command>().Which;
-					cmd.Parent.Should().Be(span);
+					cmd.Parent.Should().BeSameAs(span);
 					cmd.ElementDef.ElementId.Should().Be(commandIds[i]);
 				}
 			});
@@ -234,6 +242,113 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 				content2_1[0].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be(" ");
 
 				content[4].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("x");
+			});
+		}
+		/*
+		private sealed class ExpectedNode
+		{
+			public static ExpectedNode Literal(String text)
+			{
+				return new(typeof(Literal))
+				{
+					Text = text
+				};
+			}
+
+			public static ExpectedNode Span(IEnumerable<ExpectedNode> defaultContent)
+			{
+				return new(typeof(Span))
+				{
+					DefaultContent = defaultContent.ToArray()
+				};
+			}
+
+			public static ExpectedNode DefinedSpan(String spanId, Int32 level, IEnumerable<ExpectedNode> defaultContent)
+			{
+				return new(typeof(DefinedSpan))
+				{
+					ElementId = spanId,
+					Level = level,
+					DefaultContent = defaultContent.ToArray()
+				};
+			}
+
+			private ExpectedNode(Type nodeType)
+			{
+				NodeType = nodeType;
+			}
+
+			public Type NodeType { get; }
+
+			public String? Text { get; private init; }
+
+			public String? ElementId { get; private init; }
+
+			public Int32? Level { get; private init; }
+
+			public IReadOnlyList<ExpectedNode>? DefaultContent { get; private init; }
+		}*/
+
+		[Fact]
+		public void TestExplicitlyNestedSpan()
+		{
+			CheckParseResult(CreateBasicSyntaxWithSpans(), "<<x<<y>>z>>", span =>
+			{
+				var expectedTree = ExpectedNode.Span(new[]
+				{
+					ExpectedNode.DefinedSpan("s1", 1, new[]
+					{
+						ExpectedNode.Literal("x"),
+						ExpectedNode.DefinedSpan("s1", 2, new[]
+						{
+							ExpectedNode.Literal("y")
+						}),
+						ExpectedNode.Literal("z")
+					})
+				});
+
+				span.Should().BeSameDocumentAs(expectedTree);
+			});
+		}
+
+		[Fact]
+		public void TestImplicitlyNestedSpan()
+		{
+			var syntax = new SD.SyntaxDef();
+			syntax.AddElement(new SD.SpanDef("s1",
+				new[] { new MatchSettings(":1:") },
+				null,
+				level: new(1)));
+			syntax.AddElement(new SD.SpanDef("s1",
+				new[] { new MatchSettings(":2:") },
+				null,
+				level: new(2)));
+
+			CheckParseResult(syntax, "A:1:B:2:C:1:D:1:E:2:F:2:G", span =>
+			{
+				var expectedTree = ExpectedNode.Span(
+					ExpectedNode.Literal("A"),
+					ExpectedNode.DefinedSpan("s1", 1,
+						ExpectedNode.Literal("B"),
+						ExpectedNode.DefinedSpan("s1", 2,
+							ExpectedNode.Literal("C")
+							)
+						),
+					ExpectedNode.DefinedSpan("s1", 1,
+						ExpectedNode.Literal("D")
+						),
+					ExpectedNode.DefinedSpan("s1", 1,
+						ExpectedNode.Literal("E"),
+						ExpectedNode.DefinedSpan("s1", 2,
+							ExpectedNode.Literal("F")
+							),
+						ExpectedNode.DefinedSpan("s1", 2,
+							ExpectedNode.Literal("G")
+							)
+						)
+					);
+
+				span.Should().BeSameDocumentAs(expectedTree);
 			});
 		}
 	}

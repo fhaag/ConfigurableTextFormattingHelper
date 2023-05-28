@@ -35,6 +35,10 @@ namespace ConfigurableTextFormattingHelper.Infrastructure
 			this.pattern = pattern;
 		}
 
+		public MatchSettings(string pattern) : this((pattern ?? "").ToPreciseLocationStartRegex())
+		{
+		}
+
 		private readonly Regex pattern;
 
 		// TODO: conditions

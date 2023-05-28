@@ -76,7 +76,7 @@ namespace ConfigurableTextFormattingHelper.Syntax.Raw
 				throw new InvalidOperationException($"No start patterns assigned on syntax element '{FormattedId}'.");
 			}
 
-			return new(ElementId, Start, End ?? new(), ContentSettings, InitialContent, ContentSwitches, Level)
+			return new(ElementId, Start.Select(m => m.CreateMatchSettings()), (End ?? new()).Select(m => m.CreateMatchSettings()), ContentSettings, InitialContent, ContentSwitches, Level.CreateLevelPolicy())
 			{
 				RuleId = RuleId
 			};
@@ -93,7 +93,7 @@ namespace ConfigurableTextFormattingHelper.Syntax.Raw
 				throw new InvalidOperationException($"No patterns assigned on syntax element '{FormattedId}'.");
 			}
 
-			return new(ElementId, Match)
+			return new(ElementId, Match.Select(m => m.CreateMatchSettings()))
 			{
 				RuleId = RuleId
 			};

@@ -52,5 +52,10 @@ namespace ConfigurableTextFormattingHelper.Documents
 			}
 			return result;
 		}
+
+		protected override string GetDebugInfo()
+		{
+			return ElementDef.ElementId;
+		}
 	}
 }

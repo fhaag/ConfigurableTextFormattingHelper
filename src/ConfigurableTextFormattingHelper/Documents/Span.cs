@@ -157,5 +157,12 @@ namespace ConfigurableTextFormattingHelper.Documents
 		}
 
 		public virtual DefinedSpan? FindEnclosingSpan(string spanId) => Parent?.FindEnclosingSpan(spanId);
+
+		protected override string GetDebugInfo()
+		{
+			return "+" + GetDefaultContent().Count.ToString(InvariantCulture);
+		}
+
+		public override Span? Root => Parent != null ? Parent.Root : this;
 	}
 }

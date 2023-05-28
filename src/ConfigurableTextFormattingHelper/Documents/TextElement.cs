@@ -31,8 +31,26 @@ namespace ConfigurableTextFormattingHelper.Documents
 	{
 		public Span? Parent { get; internal set; }
 
+		public virtual Span? Root => Parent?.Root;
+
 		internal virtual void Render(Rendering.IRenderer renderer) => throw new NotSupportedException($"A text element of type {GetType().FullName} must be substituted before rendering.");
 
 		public abstract TextElement CloneDeep();
+
+		protected abstract string GetDebugInfo();
+
+		public override sealed string ToString()
+		{
+			var result = GetType().Name;
+
+			if (Parent != null)
+			{
+				result += "[in:" + Parent.GetType().Name + "]";
+			}
+
+			result += ":" + GetDebugInfo();
+
+			return result;
+		}
 	}
 }

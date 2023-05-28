@@ -26,6 +26,13 @@ namespace ConfigurableTextFormattingHelper.Infrastructure
 {
 	internal static class CollectionHelper
 	{
+		/// <summary>
+		/// Adds entries from one dictionary to another dictionary, overriding existing entries if keys are the same.
+		/// </summary>
+		/// <typeparam name="K">The key type.</typeparam>
+		/// <typeparam name="V">The value type.</typeparam>
+		/// <param name="dest">The destination dictionary.</param>
+		/// <param name="items">The dictionary whose items are to be added.</param>
 		public static void MergeEntries<K, V>(this IDictionary<K, V> dest, IEnumerable<KeyValuePair<K, V>> items)
 		{
 			ArgumentNullException.ThrowIfNull(dest);
@@ -35,6 +42,14 @@ namespace ConfigurableTextFormattingHelper.Infrastructure
 			{
 				dest[item.Key] = item.Value;
 			}
+		}
+
+		internal static IEnumerable<T> ItemsToEnumerable<T>(T firstItem, params T[] moreItems)
+		{
+			ArgumentNullException.ThrowIfNull(firstItem);
+			ArgumentNullException.ThrowIfNull(moreItems);
+
+			return new[] { firstItem }.Concat(moreItems);
 		}
 	}
 }

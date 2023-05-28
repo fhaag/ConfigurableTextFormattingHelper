@@ -46,7 +46,7 @@ namespace ConfigurableTextFormattingHelper.Syntax
 
 		public void AddElement(ElementDef element)
 		{
-			var idx = elements.FindIndex(e => e.ElementId == element.ElementId);
+			var idx = string.IsNullOrWhiteSpace(element.RuleId) ? -1 : elements.FindIndex(e => e.RuleId == element.RuleId);
 			if (idx >= 0)
 			{
 				elements[idx] = element;
@@ -82,7 +82,12 @@ namespace ConfigurableTextFormattingHelper.Syntax
 
 			for (var i = 0; i < other.Elements.Count; i++)
 			{
-				elements.Insert(i, other.Elements[i]);
+				var otherEl = other.Elements[i];
+				if (!string.IsNullOrWhiteSpace(otherEl.RuleId))
+				{
+					elements.RemoveAll(el => el.RuleId == otherEl.RuleId);
+				}
+				elements.Insert(i, otherEl);
 			}
 		}
 	}

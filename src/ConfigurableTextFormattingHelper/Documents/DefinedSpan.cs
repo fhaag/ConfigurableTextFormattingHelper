@@ -74,5 +74,10 @@ namespace ConfigurableTextFormattingHelper.Documents
 		}
 
 		protected override string InitialContentId => ElementDef.InitialContent;
+
+		protected override string GetDebugInfo()
+		{
+			return ElementDef.ElementId + "[" + Level.ToString(InvariantCulture) + "]" + base.GetDebugInfo();
+		}
 	}
 }

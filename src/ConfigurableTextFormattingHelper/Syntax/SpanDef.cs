@@ -27,7 +27,6 @@ using System.Text.RegularExpressions;
 namespace ConfigurableTextFormattingHelper.Syntax
 {
 	using Infrastructure;
-	using Infrastructure.Yaml;
 
 	/// <summary>
 	/// A syntax element whose start and end can be recognized, and that encloses other document content.
@@ -36,10 +35,13 @@ namespace ConfigurableTextFormattingHelper.Syntax
 	{
 		public const string DefaultContentId = "_default";
 
-		public SpanDef(string elementId, IEnumerable<RawMatchSettings> startPatterns, IEnumerable<RawMatchSettings> endPatterns, IEnumerable<Raw.ContentDef>? contentSettings = null, string? initialContent = null, IEnumerable<Raw.ContentSwitchDef>? contentSwitches = null, Raw.LevelPolicy? level = null) : base(elementId)
+		public SpanDef(string elementId, IEnumerable<MatchSettings> startPatterns, IEnumerable<MatchSettings>? endPatterns, IEnumerable<Raw.ContentDef>? contentSettings = null, string? initialContent = null, IEnumerable<Raw.ContentSwitchDef>? contentSwitches = null, LevelPolicy? level = null) : base(elementId)
 		{
-			this.startPatterns.AddRange(startPatterns.Select(ms => ms.CreateMatchSettings()));
-			this.endPatterns.AddRange(endPatterns.Select(ms => ms.CreateMatchSettings()));
+			this.startPatterns.AddRange(startPatterns);
+			if (endPatterns != null)
+			{
+				this.endPatterns.AddRange(endPatterns);
+			}
 
 			if (contentSwitches != null)
 			{
@@ -55,7 +57,7 @@ namespace ConfigurableTextFormattingHelper.Syntax
 				}
 			}
 
-			this.level = level?.CreateLevelPolicy() ?? new();
+			this.level = level ?? new();
 			InitialContent = initialContent ?? DefaultContentId;
 		}
 

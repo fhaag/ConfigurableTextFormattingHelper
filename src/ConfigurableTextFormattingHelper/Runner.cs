@@ -31,6 +31,10 @@ namespace ConfigurableTextFormattingHelper
 	/// <summary>
 	/// Triggers the text processing.
 	/// </summary>
+	/// <remarks>
+	/// <para>This class contains the overall logic for the stepwise processing of input files.
+	///   The <see cref="Execute(ProcessingManager, IRenderer)"/> method contains the crucial code for this process.</para>
+	/// </remarks>
 	public sealed class Runner
 	{
 		public Runner()

@@ -400,5 +400,61 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 				span.Should().BeSameDocumentAs(expectedTree);
 			});
 		}
+
+		[Fact]
+		public void TestLevelFromParamSpans()
+		{
+			var syntax = new SD.SyntaxDef();
+			syntax.AddElement(new SD.SpanDef("s1",
+				new[] { new MatchSettings(":(?<depth>[0-9]+):") },
+				null,
+				level: new("depth")));
+
+			CheckParseResult(syntax, "A:2:B:6:C:3:D", span =>
+			{
+				var expectedTree = ExpectedNode.Span(
+					ExpectedNode.Literal("A"),
+					ExpectedNode.DefinedSpan("s1", 2,
+						ExpectedNode.Literal("B"),
+						ExpectedNode.DefinedSpan("s1", 6,
+							ExpectedNode.Literal("C")
+							),
+						ExpectedNode.DefinedSpan("s1", 3,
+							ExpectedNode.Literal("D")
+							)
+						)
+					);
+
+				span.Should().BeSameDocumentAs(expectedTree);
+			});
+		}
+
+		[Fact]
+		public void TestLevelFromParamLengthSpans()
+		{
+			var syntax = new SD.SyntaxDef();
+			syntax.AddElement(new SD.SpanDef("s1",
+				new[] { new MatchSettings(":(?<depth>g+):") },
+				null,
+				level: new("depth|")));
+
+			CheckParseResult(syntax, "A:gg:B:gggggg:C:ggg:D", span =>
+			{
+				var expectedTree = ExpectedNode.Span(
+					ExpectedNode.Literal("A"),
+					ExpectedNode.DefinedSpan("s1", 2,
+						ExpectedNode.Literal("B"),
+						ExpectedNode.DefinedSpan("s1", 6,
+							ExpectedNode.Literal("C")
+							),
+						ExpectedNode.DefinedSpan("s1", 3,
+							ExpectedNode.Literal("D")
+							)
+						)
+					);
+
+				span.Should().BeSameDocumentAs(expectedTree);
+			});
+		}
 	}
 }

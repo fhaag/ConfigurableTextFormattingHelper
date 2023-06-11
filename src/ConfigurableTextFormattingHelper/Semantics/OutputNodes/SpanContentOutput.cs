@@ -26,6 +26,9 @@ namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 {
 	using Syntax;
 
+	/// <summary>
+	/// Outputs the named content of a span.
+	/// </summary>
 	internal sealed class SpanContentOutput : Output
 	{
 		public string? ContextId { get; init; }

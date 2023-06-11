@@ -41,6 +41,14 @@ namespace ConfigurableTextFormattingHelper.Tests.TestInfrastructure
 			return DefinedSpan(spanId, level, CollectionHelper.ItemsToEnumerable(firstDefaultContentElement, moreDefaultContentElements));
 		}
 
+		public static ExpectedNode RenderingInstruction(String instruction)
+		{
+			return new(typeof(RenderingInstruction))
+			{
+				Instruction = instruction
+			};
+		}
+
 		private ExpectedNode(Type nodeType)
 		{
 			NodeType = nodeType;
@@ -48,11 +56,13 @@ namespace ConfigurableTextFormattingHelper.Tests.TestInfrastructure
 
 		public Type NodeType { get; }
 
-		public String? Text { get; private init; }
+		public string? Text { get; private init; }
 
-		public String? ElementId { get; private init; }
+		public string? ElementId { get; private init; }
 
 		public Int32? Level { get; private init; }
+
+		public string? Instruction { get; private init; }
 
 		public IReadOnlyList<ExpectedNode>? DefaultContent { get; private init; }
 	}

@@ -70,6 +70,13 @@ namespace ConfigurableTextFormattingHelper.Tests.TestInfrastructure
 							.FailWith("Expected literal text of {context:text element} at path {2} to be '{0}'{reason}, but found '{1}'.",
 								expected.Text, l.Text, path);
 						break;
+					case RenderingInstruction ri:
+						Execute.Assertion
+							.BecauseOf(because, becauseArgs)
+							.ForCondition(ri.Instruction == expected.Instruction)
+							.FailWith("Expected instruction of {context:text element} at path {2} to be '{0}'{reason}, but found '{1}'.",
+								expected.Instruction, ri.Instruction, path);
+						break;
 				}
 			}
 

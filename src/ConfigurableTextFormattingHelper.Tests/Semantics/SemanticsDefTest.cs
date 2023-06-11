@@ -91,6 +91,39 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 		}
 
 		[Fact]
+		public void TestTwoCommandsToVerbatimOutput()
+		{
+			var semantics = new SemanticsDef();
+			var defaultContext = new ContextDef("default");
+
+			var elRule = new ElementRuleDef("text1");
+			elRule.Output.Add(new OutputNodes.VerbatimOutput("abc"));
+			defaultContext.Elements["text1"] = elRule;
+
+			elRule = new ElementRuleDef("text2");
+			elRule.Output.Add(new OutputNodes.VerbatimOutput("opqr"));
+			defaultContext.Elements["text2"] = elRule;
+
+			semantics.Contexts.Add(defaultContext);
+
+			var input = new Doc.Span();
+			input.AddElement(new Doc.Command(new ConfigurableTextFormattingHelper.Syntax.CommandDef("text1", new[] { new MatchSettings(@"\[text1\]") })));
+			input.AddElement(new Doc.Command(new ConfigurableTextFormattingHelper.Syntax.CommandDef("text2", new[] { new MatchSettings(@"\[text2\]") })));
+
+			CheckProcessingResult(semantics, input, actualOutput =>
+			{
+				var expectedOutput = ExpectedNode.Span(
+					ExpectedNode.Span(
+						ExpectedNode.Literal("abc"),
+						ExpectedNode.Literal("opqr")
+						)
+					);
+
+				actualOutput.Should().BeSameDocumentAs(expectedOutput);
+			});
+		}
+
+		[Fact]
 		public void TestCommandToTwoVerbatimOutput()
 		{
 			var semantics = new SemanticsDef();

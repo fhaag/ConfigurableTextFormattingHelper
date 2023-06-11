@@ -177,5 +177,46 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 				actualOutput.Should().BeSameDocumentAs(expectedOutput);
 			});
 		}
+
+		[Fact]
+		public void TestSpanWithDifferentContentOutput()
+		{
+			const string altContentId = "title";
+
+			var semantics = new SemanticsDef();
+			var defaultContext = new ContextDef("default");
+
+			var spanRule = new ElementRuleDef("sp1");
+			spanRule.Output.Add(new OutputNodes.VerbatimOutput("abc"));
+			spanRule.Output.Add(new OutputNodes.SpanContentOutput
+			{
+				ContentId = altContentId
+			});
+			spanRule.Output.Add(new OutputNodes.SpanContentOutput());
+			defaultContext.Elements["sp1"] = spanRule;
+			semantics.Contexts.Add(defaultContext);
+
+			var input = new Doc.Span();
+
+			var defSpan = new Doc.DefinedSpan(new ConfigurableTextFormattingHelper.Syntax.SpanDef("sp1", new[] { new MatchSettings(@"\(") }, new[] { new MatchSettings(@"\)") }), 1);
+			defSpan.AddElement(new Literal("klmno"));
+			defSpan.SwitchToContent(altContentId);
+			defSpan.AddElement(new Literal("pqrs"));
+
+			input.AddElement(defSpan);
+
+			CheckProcessingResult(semantics, input, actualOutput =>
+			{
+				var expectedOutput = ExpectedNode.Span(
+					ExpectedNode.Span(
+						ExpectedNode.Literal("abc"),
+						ExpectedNode.Literal("pqrs"),
+						ExpectedNode.Literal("klmno")
+						)
+					);
+
+				actualOutput.Should().BeSameDocumentAs(expectedOutput);
+			});
+		}
 	}
 }

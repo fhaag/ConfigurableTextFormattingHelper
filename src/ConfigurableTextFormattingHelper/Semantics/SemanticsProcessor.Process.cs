@@ -33,42 +33,9 @@ namespace ConfigurableTextFormattingHelper.Semantics
 				ArgumentNullException.ThrowIfNull(semantics);
 
 				Semantics = semantics;
-				if (semantics.Contexts.Count() <= 0)
-				{
-					throw new InvalidOperationException("No semantics contexts defined.");
-				}
-
-
-				currentContexts.Push(semantics.Contexts.First());
 			}
 
 			public SemanticsDef Semantics { get; }
-
-			private readonly Stack<ContextDef> currentContexts = new();
-
-			public void SwitchContext(string id)
-			{
-				ArgumentNullException.ThrowIfNull(id);
-
-				id = id.ToLowerInvariant();
-				var newCtxDef = Semantics.Contexts.FirstOrDefault(c => c.Id.ToLowerInvariant() == id);
-				if (newCtxDef == null)
-				{
-					throw new InvalidOperationException($"Context {id} is not defined.");
-				}
-
-				currentContexts.Push(newCtxDef);
-			}
-
-			public void SwitchContextBack()
-			{
-				if (currentContexts.Count <= 1)
-				{
-					throw new InvalidOperationException();
-				}
-
-				currentContexts.Pop();
-			}
 
 			public IEnumerable<Documents.TextElement> Digest(IEnumerable<Documents.TextElement> textElements)
 			{
@@ -80,9 +47,7 @@ namespace ConfigurableTextFormattingHelper.Semantics
 				{
 					if (te is Documents.IDefinedTextElement defEl)
 					{
-						var currentContext = currentContexts.Peek();
-
-						if (currentContext.Elements.TryGetValue(defEl.ElementDef.ElementId, out var elRule))
+						if (Semantics.Elements.TryGetValue(defEl.ElementDef.ElementId, out var elRule))
 						{
 							CurrentElement = te;
 

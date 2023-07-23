@@ -23,8 +23,6 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 		public void TestVerbatimOutput()
 		{
 			var semantics = new SemanticsDef();
-			var defaultContext = new ContextDef("default");
-			semantics.Contexts.Add(defaultContext);
 
 			var input = new Doc.Span();
 			input.AddElement(new Doc.Literal("abc"));
@@ -45,11 +43,9 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 		public void TestCommandToEmptyOutput()
 		{
 			var semantics = new SemanticsDef();
-			var defaultContext = new ContextDef("default");
 
 			var elRule = new ElementRuleDef("text1");
-			defaultContext.Elements["text1"] = elRule;
-			semantics.Contexts.Add(defaultContext);
+			semantics.Elements["text1"] = elRule;
 
 			var input = new Doc.Span();
 			input.AddElement(new Doc.Command(new ConfigurableTextFormattingHelper.Syntax.CommandDef("text1", new[] { new MatchSettings(@"\[text1\]") })));
@@ -68,12 +64,10 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 		public void TestCommandToVerbatimOutput()
 		{
 			var semantics = new SemanticsDef();
-			var defaultContext = new ContextDef("default");
 
 			var elRule = new ElementRuleDef("text1");
 			elRule.Output.Add(new OutputNodes.VerbatimOutput("abc"));
-			defaultContext.Elements["text1"] = elRule;
-			semantics.Contexts.Add(defaultContext);
+			semantics.Elements["text1"] = elRule;
 
 			var input = new Doc.Span();
 			input.AddElement(new Doc.Command(new ConfigurableTextFormattingHelper.Syntax.CommandDef("text1", new[] { new MatchSettings(@"\[text1\]") })));
@@ -94,17 +88,14 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 		public void TestTwoCommandsToVerbatimOutput()
 		{
 			var semantics = new SemanticsDef();
-			var defaultContext = new ContextDef("default");
 
 			var elRule = new ElementRuleDef("text1");
 			elRule.Output.Add(new OutputNodes.VerbatimOutput("abc"));
-			defaultContext.Elements["text1"] = elRule;
+			semantics.Elements["text1"] = elRule;
 
 			elRule = new ElementRuleDef("text2");
 			elRule.Output.Add(new OutputNodes.VerbatimOutput("opqr"));
-			defaultContext.Elements["text2"] = elRule;
-
-			semantics.Contexts.Add(defaultContext);
+			semantics.Elements["text2"] = elRule;
 
 			var input = new Doc.Span();
 			input.AddElement(new Doc.Command(new ConfigurableTextFormattingHelper.Syntax.CommandDef("text1", new[] { new MatchSettings(@"\[text1\]") })));
@@ -127,13 +118,11 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 		public void TestCommandToTwoVerbatimOutput()
 		{
 			var semantics = new SemanticsDef();
-			var defaultContext = new ContextDef("default");
 			
 			var elRule = new ElementRuleDef("text1");
 			elRule.Output.Add(new OutputNodes.VerbatimOutput("abc"));
 			elRule.Output.Add(new OutputNodes.VerbatimOutput("def5"));
-			defaultContext.Elements["text1"] = elRule;
-			semantics.Contexts.Add(defaultContext);
+			semantics.Elements["text1"] = elRule;
 
 			var input = new Doc.Span();
 			input.AddElement(new Doc.Command(new ConfigurableTextFormattingHelper.Syntax.CommandDef("text1", new[] { new MatchSettings(@"\[text1\]") })));
@@ -155,12 +144,10 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 		public void TestCommandToRenderingInstructionOutput()
 		{
 			var semantics = new SemanticsDef();
-			var defaultContext = new ContextDef("default");
 			
 			var elRule = new ElementRuleDef("text1");
 			elRule.Output.Add(new OutputNodes.RenderingInstructionOutput("test"));
-			defaultContext.Elements["text1"] = elRule;
-			semantics.Contexts.Add(defaultContext);
+			semantics.Elements["text1"] = elRule;
 
 			var input = new Doc.Span();
 			input.AddElement(new Doc.Command(new ConfigurableTextFormattingHelper.Syntax.CommandDef("text1", new[] { new MatchSettings(@"\[text1\]") })));
@@ -181,14 +168,12 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 		public void TestSpanWithContentOutput()
 		{
 			var semantics = new SemanticsDef();
-			var defaultContext = new ContextDef("default");
 
 			var spanRule = new ElementRuleDef("sp1");
 			spanRule.Output.Add(new OutputNodes.SpanContentOutput());
 			spanRule.Output.Add(new OutputNodes.VerbatimOutput("ijkl"));
 			spanRule.Output.Add(new OutputNodes.SpanContentOutput());
-			defaultContext.Elements["sp1"] = spanRule;
-			semantics.Contexts.Add(defaultContext);
+			semantics.Elements["sp1"] = spanRule;
 
 			var input = new Doc.Span();
 
@@ -217,7 +202,6 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 			const string altContentId = "title";
 
 			var semantics = new SemanticsDef();
-			var defaultContext = new ContextDef("default");
 
 			var spanRule = new ElementRuleDef("sp1");
 			spanRule.Output.Add(new OutputNodes.VerbatimOutput("abc"));
@@ -226,8 +210,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 				ContentId = altContentId
 			});
 			spanRule.Output.Add(new OutputNodes.SpanContentOutput());
-			defaultContext.Elements["sp1"] = spanRule;
-			semantics.Contexts.Add(defaultContext);
+			semantics.Elements["sp1"] = spanRule;
 
 			var input = new Doc.Span();
 

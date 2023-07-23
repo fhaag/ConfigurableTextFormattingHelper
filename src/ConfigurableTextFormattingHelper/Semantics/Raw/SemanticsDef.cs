@@ -26,17 +26,18 @@ namespace ConfigurableTextFormattingHelper.Semantics.Raw
 {
 	internal sealed class SemanticsDef
 	{
-		public List<ContextDef>? Context { get; set; }
+		public List<ElementRuleDef>? Elements { get; set; }
 
 		public Semantics.SemanticsDef ToRuntimeSemanticsDef(SemanticsProcessingManager processingManager)
 		{
 			var result = new Semantics.SemanticsDef();
 
-			if (Context != null)
+			if (Elements != null)
 			{
-				foreach (var context in Context)
+				foreach (var rawEl in Elements)
 				{
-					result.Contexts.Add(context.ToRuntimeContextDef(processingManager));
+					var el = rawEl.ToRuntimeElementRuleDef(processingManager);
+					result.Elements[el.Id] = el;
 				}
 			}
 

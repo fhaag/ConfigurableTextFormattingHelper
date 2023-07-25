@@ -1,34 +1,55 @@
 ﻿--- # semantics rules for prose
-context:
-  - id: default
-    elements:
-      - id: whitespace
-        output:
-          - verbatim: " "
-      - id: newline
-        output:
-          - renderingInstruction: linebreak
-      - id: parbreak
-        output:
-          - renderingInstruction: parbreak
-      - id: dictterm
-        output:
-          - dictKey: $key$
-      - id: textdash
-        output:
-          - verbatim: " – "
-      - id: section
-        output:
-          - type: header
-            level: $_level$
-            title: $title$
-          - type: spanContent
-      - id: speech
-        output:
-          - verbatim: "“"
-          - type: spanContent
-            context: speech-oddLevel
-          - verbatim: "”"
+values:
+  - id: speechLevel
+    value: 0
+    type: integer
+elements:
+  - id: whitespace
+    output:
+      - verbatim: " "
+  - id: newline
+    output:
+      - renderingInstruction: linebreak
+  - id: parbreak
+    output:
+      - renderingInstruction: parbreak
+  - id: dictterm
+    output:
+      - dictKey: $key$
+  - id: textdash
+    output:
+      - verbatim: " – "
+  - id: section
+    output:
+      - type: header
+        level: $_level$
+        title: $title$
+      - type: spanContent
+  - id: speech
+    condition: speechLevel % 2 == 0
+    output:
+      - type: inc
+        value: speechLevel
+      - verbatim: "“"
+      - type: spanContent
+      - verbatim: "”"
+      - type: dec
+        value: speechLevel
+  - id: speech
+    condition: speechLevel % 2 == 1
+    output:
+      - type: inc
+        value: speechLevel
+      - verbatim: "‘"
+      - type: spanContent
+      - verbatim: "’"
+      - type: dec
+        value: speechLevel
+  - id: speech
+    output:
+      - verbatim: "“"
+      - type: spanContent
+      - verbatim: "”"
   - id: speech-oddLevel
     base: default
     elements:

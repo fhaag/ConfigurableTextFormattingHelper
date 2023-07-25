@@ -24,17 +24,42 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Semantics
 {
+	using Infrastructure.Conditions;
+
 	internal sealed class SemanticsDef
 	{
-		public IDictionary<string, ElementRuleDef> Elements { get; } = new Dictionary<string, ElementRuleDef>();
+		public IDictionary<string, Value> Values { get; } = new Dictionary<string, Value>();
+
+		public IDictionary<string, IReadOnlyList<ElementRuleDef>> Elements { get; } = new Dictionary<string, IReadOnlyList<ElementRuleDef>>();
 
 		public void Append(SemanticsDef other)
 		{
 			ArgumentNullException.ThrowIfNull(other);
 
-			foreach (var el in other.Elements.Values)
+			foreach (var val in other.Values.Values)
 			{
-				Elements[el.Id] = el;
+				Values[val.Id] = val;
+			}
+
+			var newElements = Elements.ToDictionary(p => p.Key, p => p.Value.ToList());
+			foreach (var pair in other.Elements)
+			{
+				if (!newElements.TryGetValue(pair.Key, out var elRules))
+				{
+					elRules = new();
+					newElements[pair.Key] = elRules;
+				}
+
+				for (var i = 0; i < pair.Value.Count; i++)
+				{
+					elRules.Insert(0, pair.Value[i]);
+					i++;
+				}
+			}
+
+			foreach (var pair in newElements)
+			{
+				Elements[pair.Key] = pair.Value.ToArray();
 			}
 		}
 	}

@@ -6,13 +6,8 @@ using System.Threading.Tasks;
 
 namespace ConfigurableTextFormattingHelper.Infrastructure.Conditions
 {
-	internal class ValueReference : Value
+	internal interface IValueProvider
 	{
-		public ValueReference(string valueName)
-		{
-			ValueName = valueName;
-		}
-
-		public string ValueName { get; }
+		IReadOnlyDictionary<string, Value> Values { get; }
 	}
 }

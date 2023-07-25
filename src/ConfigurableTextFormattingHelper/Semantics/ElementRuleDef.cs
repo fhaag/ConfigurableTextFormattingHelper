@@ -26,6 +26,8 @@ using ConfigurableTextFormattingHelper.Semantics.OutputNodes;
 
 namespace ConfigurableTextFormattingHelper.Semantics
 {
+	using Infrastructure.Conditions;
+
 	internal sealed class ElementRuleDef
 	{
 		public ElementRuleDef(string id)
@@ -36,6 +38,8 @@ namespace ConfigurableTextFormattingHelper.Semantics
 		}
 
 		public string Id { get; }
+
+		public Condition? Condition { get; set; }
 
 		public IList<Output> Output { get; } = new List<Output>();
 	}

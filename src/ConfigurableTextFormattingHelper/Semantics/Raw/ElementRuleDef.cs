@@ -24,15 +24,22 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Semantics.Raw
 {
+	using Infrastructure.Conditions;
+
 	internal class ElementRuleDef
 	{
 		public string? Id { get; set; }
+
+		public string? Condition { get; set; }
 
 		public List<OutputDef>? Output { get; set; }
 
 		public Semantics.ElementRuleDef ToRuntimeElementRuleDef(SemanticsProcessingManager processingManager)
 		{
-			var result = new Semantics.ElementRuleDef(Id ?? "");
+			var result = new Semantics.ElementRuleDef(Id ?? "")
+			{
+				Condition = new Condition(Condition)
+			};
 
 			if (Output != null)
 			{

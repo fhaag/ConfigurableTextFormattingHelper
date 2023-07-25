@@ -45,7 +45,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 			var semantics = new SemanticsDef();
 
 			var elRule = new ElementRuleDef("text1");
-			semantics.Elements["text1"] = elRule;
+			semantics.Elements["text1"] = new[] { elRule };
 
 			var input = new Doc.Span();
 			input.AddElement(new Doc.Command(new ConfigurableTextFormattingHelper.Syntax.CommandDef("text1", new[] { new MatchSettings(@"\[text1\]") })));
@@ -67,7 +67,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 
 			var elRule = new ElementRuleDef("text1");
 			elRule.Output.Add(new OutputNodes.VerbatimOutput("abc"));
-			semantics.Elements["text1"] = elRule;
+			semantics.Elements["text1"] = new[] { elRule };
 
 			var input = new Doc.Span();
 			input.AddElement(new Doc.Command(new ConfigurableTextFormattingHelper.Syntax.CommandDef("text1", new[] { new MatchSettings(@"\[text1\]") })));
@@ -91,11 +91,11 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 
 			var elRule = new ElementRuleDef("text1");
 			elRule.Output.Add(new OutputNodes.VerbatimOutput("abc"));
-			semantics.Elements["text1"] = elRule;
+			semantics.Elements["text1"] = new[] { elRule };
 
 			elRule = new ElementRuleDef("text2");
 			elRule.Output.Add(new OutputNodes.VerbatimOutput("opqr"));
-			semantics.Elements["text2"] = elRule;
+			semantics.Elements["text2"] = new[] { elRule };
 
 			var input = new Doc.Span();
 			input.AddElement(new Doc.Command(new ConfigurableTextFormattingHelper.Syntax.CommandDef("text1", new[] { new MatchSettings(@"\[text1\]") })));
@@ -122,7 +122,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 			var elRule = new ElementRuleDef("text1");
 			elRule.Output.Add(new OutputNodes.VerbatimOutput("abc"));
 			elRule.Output.Add(new OutputNodes.VerbatimOutput("def5"));
-			semantics.Elements["text1"] = elRule;
+			semantics.Elements["text1"] = new[] { elRule };
 
 			var input = new Doc.Span();
 			input.AddElement(new Doc.Command(new ConfigurableTextFormattingHelper.Syntax.CommandDef("text1", new[] { new MatchSettings(@"\[text1\]") })));
@@ -147,7 +147,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 			
 			var elRule = new ElementRuleDef("text1");
 			elRule.Output.Add(new OutputNodes.RenderingInstructionOutput("test"));
-			semantics.Elements["text1"] = elRule;
+			semantics.Elements["text1"] = new[] { elRule };
 
 			var input = new Doc.Span();
 			input.AddElement(new Doc.Command(new ConfigurableTextFormattingHelper.Syntax.CommandDef("text1", new[] { new MatchSettings(@"\[text1\]") })));
@@ -173,7 +173,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 			spanRule.Output.Add(new OutputNodes.SpanContentOutput());
 			spanRule.Output.Add(new OutputNodes.VerbatimOutput("ijkl"));
 			spanRule.Output.Add(new OutputNodes.SpanContentOutput());
-			semantics.Elements["sp1"] = spanRule;
+			semantics.Elements["sp1"] =	new[] { spanRule };
 
 			var input = new Doc.Span();
 
@@ -210,7 +210,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Semantics
 				ContentId = altContentId
 			});
 			spanRule.Output.Add(new OutputNodes.SpanContentOutput());
-			semantics.Elements["sp1"] = spanRule;
+			semantics.Elements["sp1"] = new[] { spanRule };
 
 			var input = new Doc.Span();
 

@@ -24,7 +24,9 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Semantics
 {
-	internal interface ISubstitutionProcess
+	using Infrastructure.Conditions;
+
+	internal interface ISubstitutionProcess : IValueProvider
 	{
 		Documents.TextElement CurrentElement { get; }
 

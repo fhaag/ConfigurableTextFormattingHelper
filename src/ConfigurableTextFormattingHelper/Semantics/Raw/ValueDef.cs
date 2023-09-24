@@ -8,7 +8,7 @@
 
 		public string? Value { get; set; }
 
-		public Infrastructure.Conditions.Value CreateValue()
+		public Infrastructure.Expressions.Value CreateValue()
 		{
 			if (Id == null)
 			{
@@ -20,7 +20,7 @@
 				case "integer":
 					if (int.TryParse(Value, out var intValue))
 					{
-						return new Infrastructure.Conditions.IntegerValue(Id)
+						return new Infrastructure.Expressions.IntegerValue(Id)
 						{
 							Value = intValue
 						};
@@ -30,7 +30,7 @@
 						throw new InvalidOperationException();
 					}
 				case "string":
-					return new Infrastructure.Conditions.StringValue(Id)
+					return new Infrastructure.Expressions.StringValue(Id)
 					{
 						Value = Value ?? ""
 					};

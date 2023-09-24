@@ -28,6 +28,7 @@ namespace ConfigurableTextFormattingHelper.Semantics.Raw
 {
 	using OutputNodes;
 	using Infrastructure;
+	using ConfigurableTextFormattingHelper.Infrastructure.Expressions;
 
 	internal class OutputDef
 	{
@@ -43,7 +44,17 @@ namespace ConfigurableTextFormattingHelper.Semantics.Raw
 
 		public string? Content { get; set; }
 
-		public YamlNode? Arguments { get; set; }
+		public string? Id { get; set; }
+
+		public string? Value { get; set; }
+
+		public string? Level { get; set; }
+
+		public string? Title { get; set; }
+
+		//public YamlNode? Arguments { get; set; }
+
+		public Dictionary<string, string>? Arguments { get; set; }
 
 		#endregion
 
@@ -55,6 +66,10 @@ namespace ConfigurableTextFormattingHelper.Semantics.Raw
 				"renderinginstruction" => CreateRenderingInstruction(processingManager),
 				"dictionary" => CreateDictionary(processingManager),
 				"spancontent" => CreateSpanContent(processingManager),
+				"setvalue" => CreateSetValueOutput(processingManager),
+				"inc" => CreateIncDecValueOutput(processingManager, true),
+				"dec" => CreateIncDecValueOutput(processingManager, false),
+				{ } => throw new InvalidOperationException($"Unknown output type: {Type}"),
 				_ => GuessOutput(processingManager)
 			};
 		}
@@ -76,7 +91,17 @@ namespace ConfigurableTextFormattingHelper.Semantics.Raw
 				processingManager.AddMessage(new(ProcessingStage.Initialization, MessageSeverity.Error, processingManager.Messages.CreateMessage(110), null));
 			}
 
-			return new(RenderingInstruction);
+			var result = new RenderingInstructionOutput(RenderingInstruction);
+			
+			if (Arguments != null)
+			{
+				foreach (var pair in Arguments)
+				{
+					result.Arguments[pair.Key] = new[] { pair.Value };
+				}
+			}
+
+			return result;
 		}
 
 		private DictionaryOutput CreateDictionary(SemanticsProcessingManager processingManager)
@@ -91,6 +116,30 @@ namespace ConfigurableTextFormattingHelper.Semantics.Raw
 			{
 				ContentId = Content
 			};
+		}
+
+		private SetValueOutput CreateSetValueOutput(SemanticsProcessingManager processingManager)
+		{
+			if (Id == null)
+			{
+				processingManager.AddMessage(new(ProcessingStage.Initialization, MessageSeverity.Error, processingManager.Messages.CreateMessage(120), null));
+				throw new InvalidOperationException("Error detected.");
+			}
+
+			return new(SetValueOutput.SetValueMode.Assign, Id, new EvaluatableExpression(Value));
+		}
+
+		private SetValueOutput CreateIncDecValueOutput(SemanticsProcessingManager processingManager, bool increase)
+		{
+			if (Id == null)
+			{
+				processingManager.AddMessage(new(ProcessingStage.Initialization, MessageSeverity.Error, processingManager.Messages.CreateMessage(120), null));
+				throw new InvalidOperationException("Error detected.");
+			}
+
+			return new(increase
+				? SetValueOutput.SetValueMode.Increase
+				: SetValueOutput.SetValueMode.Decrease, Id, new EvaluatableExpression(Value ?? "1"));
 		}
 
 		private Output GuessOutput(SemanticsProcessingManager processingManager)

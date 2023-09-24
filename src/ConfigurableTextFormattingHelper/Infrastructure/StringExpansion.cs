@@ -26,6 +26,8 @@ using System.Text.RegularExpressions;
 
 namespace ConfigurableTextFormattingHelper.Infrastructure
 {
+	using ExprValue = Expressions.Value;
+
 	/// <summary>
 	/// This helper class contains methods for replacing placeholders in strings.
 	/// </summary>
@@ -33,7 +35,7 @@ namespace ConfigurableTextFormattingHelper.Infrastructure
 	{
 		private static readonly Regex PlaceholderPattern = new(@"\[\[(?<token>[A-Za-z0-9-_]+)(?:\.(?<indexNumber>[-+]?[0-9]+))?(?<operation>#|\|)?\]\]");
 
-		public static string Expand(this string str, IReadOnlyDictionary<string, string[]> arguments)
+		public static string Expand(this string str, IReadOnlyDictionary<string, ExprValue> arguments)
 		{
 			ArgumentNullException.ThrowIfNull(str);
 			ArgumentNullException.ThrowIfNull(arguments);
@@ -44,7 +46,18 @@ namespace ConfigurableTextFormattingHelper.Infrastructure
 				var indexNumberGroup = match.Groups["indexNumber"];
 				var operationGroup = match.Groups["operation"];
 
-				if (arguments.TryGetValue(tokenGroup.Value, out var values))
+				if (arguments.TryGetValue(tokenGroup.Value, out var val))
+				{
+					return (operationGroup.Success, operationGroup.Value) switch
+					{
+						(true, "|") => val.AsStringValue.Value.Length.ToString(InvariantCulture),
+						_ => val.AsStringValue.Value
+					};
+				}
+
+				// TODO: consider other operations?
+				/*
+				if (arguments.TryGetValue(tokenGroup.Value, out var val))
 				{
 					if (operationGroup.Value == "#")
 					{
@@ -65,7 +78,7 @@ namespace ConfigurableTextFormattingHelper.Infrastructure
 							switch (operationGroup.Value)
 							{
 								case "|":
-									return values[index].Length.ToString(InvariantCulture);
+									return val.Length.ToString(InvariantCulture);
 								default:
 									throw new NotImplementedException("A compiler error should be returned here.");
 							}
@@ -75,7 +88,7 @@ namespace ConfigurableTextFormattingHelper.Infrastructure
 							return values[index];
 						}
 					}
-				}
+				}*/
 
 				return "";
 			}

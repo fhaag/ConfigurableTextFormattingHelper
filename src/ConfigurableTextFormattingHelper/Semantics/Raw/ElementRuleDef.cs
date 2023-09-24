@@ -24,7 +24,7 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Semantics.Raw
 {
-	using Infrastructure.Conditions;
+	using Infrastructure.Expressions;
 
 	internal class ElementRuleDef
 	{
@@ -38,7 +38,7 @@ namespace ConfigurableTextFormattingHelper.Semantics.Raw
 		{
 			var result = new Semantics.ElementRuleDef(Id ?? "")
 			{
-				Condition = new Condition(Condition)
+				Condition = new EvaluatableExpression(Condition)
 			};
 
 			if (Output != null)

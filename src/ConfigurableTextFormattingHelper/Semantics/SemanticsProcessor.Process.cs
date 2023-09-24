@@ -24,7 +24,8 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Semantics
 {
-	using Infrastructure.Conditions;
+	using ConfigurableTextFormattingHelper.Infrastructure.Conditions;
+	using Infrastructure.Expressions;
 
 	partial class SemanticsProcessor
 	{
@@ -54,16 +55,20 @@ namespace ConfigurableTextFormattingHelper.Semantics
 				{
 					if (te is Documents.IDefinedTextElement defEl)
 					{
+						var ctx = new ValueAggregator();
+						ctx.AddFallbackLevel(values);
+						ctx.AddFallbackLevel(defEl.Arguments);
+
 						if (Semantics.Elements.TryGetValue(defEl.ElementDef.ElementId, out var elRules))
 						{
-							var matchingRule = elRules.FirstOrDefault(er => er.Condition?.Evaluate(this) ?? true);
+							var matchingRule = elRules.FirstOrDefault(er => er.Condition?.EvaluateToBoolean(ctx) ?? true);
 							if (matchingRule != null)
 							{
 								CurrentElement = te;
 
 								foreach (var output in matchingRule.Output)
 								{
-									foreach (var outputEl in output.Generate(this, defEl.Arguments))
+									foreach (var outputEl in output.Generate(this, ctx /*defEl.Arguments*/))
 									{
 										result.Add(outputEl);
 									}
@@ -94,8 +99,6 @@ namespace ConfigurableTextFormattingHelper.Semantics
 			private readonly Dictionary<string, Value> values = new();
 
 			public IDictionary<string, Value> Values => values;
-
-			IReadOnlyDictionary<string, Value> IValueProvider.Values => values;
 		}
 	}
 }

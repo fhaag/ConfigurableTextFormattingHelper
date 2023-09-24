@@ -190,7 +190,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 
 				var span1Child1 = content1[0].Should().BeOfType<Doc.DefinedSpan>().Which;
 				span1Child1.ElementDef.ElementId.Should().Be("s2");
-				span1Child1.Arguments.Should().ContainKey("testval").WhoseValue.Should().BeEquivalentTo(new[] { "XXXX" });
+				span1Child1.Arguments.Should().ContainKey("testval").WhoseValue.AsStringValue.Value.Should().Be("XXXX");
 				var content1_1 = span1Child1.GetDefaultContent();
 				content1_1.Should().HaveCount(1).And.OnlyContain(e => e.Parent == span1Child1);
 
@@ -230,7 +230,7 @@ namespace ConfigurableTextFormattingHelper.Tests.Parser
 
 				var span2 = content[3].Should().BeOfType<Doc.DefinedSpan>().Which;
 				span2.ElementDef.ElementId.Should().Be("s2");
-				span2.Arguments.Should().ContainKey("testval").WhoseValue.Should().BeEquivalentTo(new[] { "ABC" });
+				span2.Arguments.Should().ContainKey("testval").WhoseValue.AsStringValue.Value.Should().Be("ABC");
 				var content2 = span2.GetDefaultContent();
 				content2.Should().HaveCount(2).And.OnlyContain(e => e.Parent == span2);
 				content2[0].Should().BeOfType<Doc.Literal>().Which.Text.Should().Be("1234");

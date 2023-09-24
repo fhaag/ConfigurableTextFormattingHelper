@@ -24,6 +24,7 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 {
+	using ConfigurableTextFormattingHelper.Infrastructure.Expressions;
 	using Syntax;
 
 	/// <summary>
@@ -33,7 +34,7 @@ namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 	{
 		public string? ContentId { get; init; }
 
-		public override IEnumerable<Documents.TextElement> Generate(ISubstitutionProcess process, IReadOnlyDictionary<string, string[]> arguments)
+		public override IEnumerable<Documents.TextElement> Generate(ISubstitutionProcess process, IValueProvider context)
 		{
 			if (process.CurrentElement is Documents.Span span)
 			{

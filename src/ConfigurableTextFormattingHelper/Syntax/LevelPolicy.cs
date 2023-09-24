@@ -25,6 +25,7 @@ SOFTWARE.
 namespace ConfigurableTextFormattingHelper.Syntax
 {
 	using Infrastructure;
+	using ExprValue = Infrastructure.Expressions.Value;
 
 	public sealed class LevelPolicy
 	{
@@ -50,7 +51,7 @@ namespace ConfigurableTextFormattingHelper.Syntax
 
 		public int? Value { get; private set; }
 
-		public int DetermineLevel(int? enclosingLevel, IReadOnlyDictionary<string, string[]> arguments)
+		internal int DetermineLevel(int? enclosingLevel, IReadOnlyDictionary<string, ExprValue> arguments)
 		{
 			ArgumentNullException.ThrowIfNull(arguments);
 

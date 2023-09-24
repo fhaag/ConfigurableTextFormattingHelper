@@ -24,10 +24,12 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Documents
 {
+	using ExprValue = Infrastructure.Expressions.Value;
+
 	internal interface IDefinedTextElement
 	{
 		Syntax.ElementDef ElementDef { get; }
 
-		IReadOnlyDictionary<string, string[]> Arguments { get; }
+		IReadOnlyDictionary<string, ExprValue> Arguments { get; }
 	}
 }

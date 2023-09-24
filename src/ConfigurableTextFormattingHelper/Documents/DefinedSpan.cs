@@ -24,6 +24,8 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Documents
 {
+	using ExprValue = Infrastructure.Expressions.Value;
+
 	internal sealed class DefinedSpan : Span, IDefinedTextElement
 	{
 		public DefinedSpan(Syntax.SpanDef elementDef, int level) : base()
@@ -42,11 +44,11 @@ namespace ConfigurableTextFormattingHelper.Documents
 
 		Syntax.ElementDef IDefinedTextElement.ElementDef => ElementDef;
 
-		private readonly Dictionary<string, string[]> arguments = new();
+		private readonly Dictionary<string, ExprValue> arguments = new();
 
-		public IDictionary<string, string[]> Arguments => arguments;
+		public IDictionary<string, ExprValue> Arguments => arguments;
 
-		IReadOnlyDictionary<string, string[]> IDefinedTextElement.Arguments => arguments;
+		IReadOnlyDictionary<string, ExprValue> IDefinedTextElement.Arguments => arguments;
 
 		public override TextElement CloneDeep()
 		{

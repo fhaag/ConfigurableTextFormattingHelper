@@ -23,6 +23,7 @@ SOFTWARE.
  */
 
 using ConfigurableTextFormattingHelper.Documents;
+using ConfigurableTextFormattingHelper.Infrastructure.Expressions;
 
 namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 {
@@ -40,7 +41,7 @@ namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 
 		public string Text { get; }
 
-		public override IEnumerable<TextElement> Generate(ISubstitutionProcess process, IReadOnlyDictionary<string, string[]> arguments)
+		public override IEnumerable<TextElement> Generate(ISubstitutionProcess process, IValueProvider context)
 		{
 			yield return new Literal(Text);
 		}

@@ -24,7 +24,7 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Semantics
 {
-	using Infrastructure.Conditions;
+	using Infrastructure.Expressions;
 
 	internal sealed class SemanticsDef
 	{

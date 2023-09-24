@@ -23,6 +23,7 @@ SOFTWARE.
  */
 
 using ConfigurableTextFormattingHelper.Documents;
+using ConfigurableTextFormattingHelper.Infrastructure.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 	/// </summary>
 	internal sealed class IncludeOutput : Output
 	{
-		public override IEnumerable<TextElement> Generate(ISubstitutionProcess process, IReadOnlyDictionary<string, string[]> arguments)
+		public override IEnumerable<TextElement> Generate(ISubstitutionProcess process, IValueProvider context)
 		{
 			throw new NotImplementedException();
 		}

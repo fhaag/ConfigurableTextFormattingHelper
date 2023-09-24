@@ -11,6 +11,16 @@ elements:
     output:
       - renderingInstruction: linebreak
   - id: parbreak
+    condition: speechLevel > 0 and speechLevel % 2 == 0
+    output:
+      - renderingInstruction: parbreak
+      - verbatim: "‘"
+  - id: parbreak
+    condition: speechLevel > 0 and speechLevel % 2 == 1
+    output:
+      - renderingInstruction: parbreak
+      - verbatim: "“"
+  - id: parbreak
     output:
       - renderingInstruction: parbreak
   - id: dictterm
@@ -21,9 +31,10 @@ elements:
       - verbatim: " – "
   - id: section
     output:
-      - type: header
-        level: $_level$
-        title: $title$
+      - renderingInstruction: header
+        arguments:
+          level: level
+          title: title
       - type: spanContent
   - id: speech
     condition: speechLevel % 2 == 0
@@ -50,29 +61,3 @@ elements:
       - verbatim: "“"
       - type: spanContent
       - verbatim: "”"
-  - id: speech-oddLevel
-    base: default
-    elements:
-      - id: speech
-        output:
-          - verbatim: "‘"
-          - type: spanContent
-            context: speech-evenLevel
-          - verbatim: "’"
-      - id: parbreak
-        output:
-          - renderingInstruction: parbreak
-          - verbatim: "“"
-  - id: speech-evenLevel
-    base: default
-    elements:
-      - id: speech
-        output:
-          - verbatim: "“"
-          - type: spanContent
-            context: speech-oddLevel
-          - verbatim: "”"
-      - id: parbreak
-        output:
-          - renderingInstruction: parbreak
-          - verbatim: "‘"

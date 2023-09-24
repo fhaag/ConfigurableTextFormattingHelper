@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ConfigurableTextFormattingHelper.Infrastructure.Conditions
+﻿namespace ConfigurableTextFormattingHelper.Infrastructure.Expressions
 {
 	internal sealed class IntegerValue : Value
 	{
@@ -18,6 +12,8 @@ namespace ConfigurableTextFormattingHelper.Infrastructure.Conditions
 		{
 			Value = Value
 		};
+
+		public override StringValue AsStringValue => new StringValue(Id) { Value = Value.ToString(InvariantCulture) };
 
 		public override IEnumerable<IntegerValue> IntegerValues
 		{

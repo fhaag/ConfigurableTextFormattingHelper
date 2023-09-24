@@ -25,6 +25,7 @@ SOFTWARE.
 using ConfigurableTextFormattingHelper.Infrastructure;
 using System.Text;
 using System.Text.RegularExpressions;
+using ExprValue = ConfigurableTextFormattingHelper.Infrastructure.Expressions.Value;
 
 namespace ConfigurableTextFormattingHelper.Syntax
 {
@@ -203,13 +204,14 @@ namespace ConfigurableTextFormattingHelper.Syntax
 			return currentSpan.Root ?? throw new InvalidOperationException("No span was generated.");
 		}
 
-		private IReadOnlyDictionary<string, string[]> ExtractArguments(Match match)
+		private IReadOnlyDictionary<string, ExprValue> ExtractArguments(Match match)
 		{
-			var result = new Dictionary<string, string[]>();
+			var result = new Dictionary<string, ExprValue>();
 
 			foreach (var group in match.Groups.OfType<Group>().Where(g => !string.IsNullOrWhiteSpace(g.Name)))
 			{
-				result[group.Name] = group.Captures.Select(c => c.Value).ToArray();
+				var val = ExprValue.CreateFromStrings(group.Name, group.Value, true);
+				result[val.Id] = val;
 			}
 
 			return result;

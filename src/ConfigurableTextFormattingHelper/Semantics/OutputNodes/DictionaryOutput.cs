@@ -23,6 +23,7 @@ SOFTWARE.
  */
 
 using ConfigurableTextFormattingHelper.Documents;
+using ConfigurableTextFormattingHelper.Infrastructure.Expressions;
 
 namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 {
@@ -35,7 +36,7 @@ namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 
 		public List<string> VariantFlags { get; } = new();
 
-		public override IEnumerable<TextElement> Generate(ISubstitutionProcess process, IReadOnlyDictionary<string, string[]> arguments)
+		public override IEnumerable<TextElement> Generate(ISubstitutionProcess process, IValueProvider context)
 		{
 			throw new NotImplementedException();
 		}

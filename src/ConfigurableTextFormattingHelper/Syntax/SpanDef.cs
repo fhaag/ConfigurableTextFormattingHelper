@@ -27,6 +27,7 @@ using System.Text.RegularExpressions;
 namespace ConfigurableTextFormattingHelper.Syntax
 {
 	using Infrastructure;
+	using ExprValue = Infrastructure.Expressions.Value;
 
 	/// <summary>
 	/// A syntax element whose start and end can be recognized, and that encloses other document content.
@@ -71,7 +72,7 @@ namespace ConfigurableTextFormattingHelper.Syntax
 
 		public Match? FindEndInText(string text, int charIndex) => endPatterns.FindMatch(text, charIndex);
 
-		public int DetermineLevel(int? enclosingLevel, IReadOnlyDictionary<string, string[]> arguments) => level.DetermineLevel(enclosingLevel, arguments);
+		public int DetermineLevel(int? enclosingLevel, IReadOnlyDictionary<string, ExprValue> arguments) => level.DetermineLevel(enclosingLevel, arguments);
 
 		private readonly List<ContentSwitchDef> contentSwitches = new();
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConfigurableTextFormattingHelper.Infrastructure.Conditions
+namespace ConfigurableTextFormattingHelper.Infrastructure.Expressions
 {
 	internal sealed class StringValue : Value
 	{
@@ -18,6 +18,8 @@ namespace ConfigurableTextFormattingHelper.Infrastructure.Conditions
 		{
 			Value = Value
 		};
+
+		public override StringValue AsStringValue => this;
 
 		public override IEnumerable<IntegerValue> IntegerValues
 		{

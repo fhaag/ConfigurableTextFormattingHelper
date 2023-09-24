@@ -22,10 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
+using ConfigurableTextFormattingHelper.Infrastructure.Expressions;
+
 namespace ConfigurableTextFormattingHelper.Semantics.OutputNodes
 {
 	internal abstract class Output
 	{
-		public abstract IEnumerable<Documents.TextElement> Generate(ISubstitutionProcess process, IReadOnlyDictionary<string, string[]> arguments);
+		public abstract IEnumerable<Documents.TextElement> Generate(ISubstitutionProcess process, IValueProvider context);
 	}
 }

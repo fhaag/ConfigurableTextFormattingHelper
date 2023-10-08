@@ -22,10 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-namespace ConfigurableTextFormattingHelper.Dictionaries
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConfigurableTextFormattingHelper.Dictionaries.Raw
 {
-	internal abstract class DictionaryEntry
+    internal sealed class Dictionary
 	{
-		public abstract string? Resolve(FlagMatchingStrategy strategy, IReadOnlySet<string> flags);
+		private readonly Dictionary<string, DictionaryEntry> items = new();
+
+		public DictionaryEntry? FindEntry(string key, params string[] variantFlags)
+		{
+			if (items.TryGetValue(key, out var entry))
+			{
+
+			}
+
+			return null;
+		}
 	}
 }

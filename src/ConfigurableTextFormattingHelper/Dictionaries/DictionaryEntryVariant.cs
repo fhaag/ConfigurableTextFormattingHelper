@@ -24,8 +24,5 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Dictionaries
 {
-	internal abstract class DictionaryEntry
-	{
-		public abstract string? Resolve(FlagMatchingStrategy strategy, IReadOnlySet<string> flags);
-	}
+	internal record DictionaryEntryVariant(IReadOnlySet<string> Flags, string Text);
 }

@@ -22,10 +22,48 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-namespace ConfigurableTextFormattingHelper.Dictionaries
+namespace ConfigurableTextFormattingHelper.Dictionaries.Raw
 {
 	internal abstract class DictionaryEntry
 	{
-		public abstract string? Resolve(FlagMatchingStrategy strategy, IReadOnlySet<string> flags);
+		protected DictionaryEntry(Dictionary owner)
+		{
+			ArgumentNullException.ThrowIfNull(owner);
+
+			_owner = owner;
+		}
+
+		private readonly Dictionary _owner;
+
+		public string? Text { get; set; }
+
+		public Dictionary<string, DictionaryEntry> Variants { get; } = new();
+
+		public Dictionaries.DictionaryEntry ToDictionaryEntry()
+		{
+			if (Variants.Count <= 0)
+			{
+				return new SimpleDictionaryEntry(Text ?? "");
+			}
+
+			var variants = new List<DictionaryEntryVariant>();
+
+			void CollectVariants(DictionaryEntry root, string[] flags)
+			{
+				foreach (var pair in root.Variants)
+				{
+					CollectVariants(pair.Value, flags.Append(pair.Key).ToArray());
+				}
+
+				if (root.Text != null)
+				{
+					variants.Add(new(flags.ToHashSet(), root.Text));
+				}
+			}
+
+			CollectVariants(this, Array.Empty<string>());
+
+			return new ComplexDictionaryEntry(variants);
+		}
 	}
 }

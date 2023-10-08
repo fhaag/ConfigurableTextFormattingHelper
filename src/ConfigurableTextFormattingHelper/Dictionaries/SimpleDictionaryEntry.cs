@@ -24,8 +24,27 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Dictionaries
 {
-	internal abstract class DictionaryEntry
+	internal sealed class SimpleDictionaryEntry : DictionaryEntry
 	{
-		public abstract string? Resolve(FlagMatchingStrategy strategy, IReadOnlySet<string> flags);
+		public SimpleDictionaryEntry(string text)
+		{
+			ArgumentNullException.ThrowIfNull(text);
+
+			Text = text;
+		}
+
+		public string Text { get; }
+
+		public override string? Resolve(FlagMatchingStrategy strategy, IReadOnlySet<string> flags)
+		{
+			switch (strategy)
+			{
+				case FlagMatchingStrategy.AllFlags:
+				case FlagMatchingStrategy.ExactFlags:
+					return flags.Count == 0 ? Text : null;
+				default:
+					return Text;
+			}
+		}
 	}
 }

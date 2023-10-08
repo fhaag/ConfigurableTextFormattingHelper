@@ -24,8 +24,22 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Dictionaries
 {
-	internal abstract class DictionaryEntry
+	internal enum FlagMatchingStrategy
 	{
-		public abstract string? Resolve(FlagMatchingStrategy strategy, IReadOnlySet<string> flags);
+		/// <summary>
+		/// The returned term has all requested flags.
+		/// </summary>
+		AllFlags,
+
+		/// <summary>
+		/// The returned term has exactly the requested flags.
+		/// </summary>
+		ExactFlags,
+
+		/// <summary>
+		/// The returned term has the maximum amount of requested flags found among
+		/// all variants of the dictionary entry.
+		/// </summary>
+		MaximumFlags
 	}
 }

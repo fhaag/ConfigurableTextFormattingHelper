@@ -24,17 +24,8 @@ SOFTWARE.
 
 namespace ConfigurableTextFormattingHelper.Dictionaries.Raw
 {
-	internal abstract class DictionaryEntry
+	internal sealed class DictionaryEntry
 	{
-		protected DictionaryEntry(Dictionary owner)
-		{
-			ArgumentNullException.ThrowIfNull(owner);
-
-			_owner = owner;
-		}
-
-		private readonly Dictionary _owner;
-
 		public string? Text { get; set; }
 
 		public Dictionary<string, DictionaryEntry> Variants { get; } = new();

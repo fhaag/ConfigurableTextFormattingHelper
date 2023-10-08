@@ -1,5 +1,7 @@
 ﻿using ConfigurableTextFormattingHelper.Dictionaries;
 using System.Runtime.CompilerServices;
+using System.Security.AccessControl;
+using Xunit;
 
 namespace ConfigurableTextFormattingHelper.Tests.Dictionary
 {
@@ -14,6 +16,8 @@ namespace ConfigurableTextFormattingHelper.Tests.Dictionary
 			}
 			return result;
 		}
+
+		#region TestSimpleEntry
 
 		public static IEnumerable<object?[]> GetSimpleEntryData()
 		{
@@ -45,6 +49,10 @@ namespace ConfigurableTextFormattingHelper.Tests.Dictionary
 				resolveResult.Should().Be(expected);
 			}
 		}
+
+		#endregion
+
+		#region TestComplexEntry
 
 		public static IEnumerable<object?[]> GetComplexEntryData()
 		{
@@ -101,5 +109,72 @@ namespace ConfigurableTextFormattingHelper.Tests.Dictionary
 				resolveResult.Should().Be(expected);
 			}
 		}
+
+		#endregion
+
+		#region TestExpansionFromRaw
+
+		public static IEnumerable<object?[]> GetExpansionFromRawData()
+		{
+			IEnumerable<(Dictionaries.Raw.DictionaryEntry rawEntry, Dictionaries.DictionaryEntry importedEntry)> GetItems()
+			{
+				yield return (new(), new SimpleDictionaryEntry(""));
+
+				yield return (new()
+				{
+					Text = "abc"
+				}, new SimpleDictionaryEntry("abc"));
+
+				yield return (new()
+				{
+					Text = "efgh",
+					Variants =
+					{
+						{"x", new()
+						{
+							Text = "xyz"
+						}
+						}
+					}
+				}, new ComplexDictionaryEntry(new[] {
+					new DictionaryEntryVariant(new[] {"x" }.ToHashSet(), "xyz"),
+					new DictionaryEntryVariant(new HashSet<string>(), "efgh")
+				}));
+			}
+
+			return GetItems().Select(t => TupleToObjects(t));
+		}
+
+		[Theory]
+		[MemberData(nameof(GetExpansionFromRawData))]
+		internal void TestExpansionFromRaw(Dictionaries.Raw.DictionaryEntry rawEntry, Dictionaries.DictionaryEntry importedEntry)
+		{
+			var expanded = rawEntry.ToDictionaryEntry();
+
+			expanded.Should().BeOfType(importedEntry.GetType());
+
+			switch (expanded, importedEntry)
+			{
+				case (SimpleDictionaryEntry simple, SimpleDictionaryEntry expectedSimple):
+					simple.Text.Should().Be(expectedSimple.Text);
+					break;
+				case (ComplexDictionaryEntry complex, ComplexDictionaryEntry expectedComplex):
+					complex.Variants.Should().HaveSameCount(expectedComplex.Variants);
+
+					for (var i = 0; i < complex.Variants.Count; i++)
+					{
+						var variant = complex.Variants[i];
+						var expectedVariant = expectedComplex.Variants[i];
+
+						variant.Text.Should().Be(expectedVariant.Text);
+						variant.Flags.Should().BeEquivalentTo(expectedVariant.Flags);
+					}
+					break;
+				default:
+					throw new InvalidOperationException($"This case should never occur: Expected {importedEntry.GetType()}, but found {expanded.GetType()}.");
+			}
+		}
+
+		#endregion
 	}
 }

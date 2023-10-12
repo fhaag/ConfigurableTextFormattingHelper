@@ -140,6 +140,52 @@ namespace ConfigurableTextFormattingHelper.Tests.Dictionary
 					new DictionaryEntryVariant(new[] {"x" }.ToHashSet(), "xyz"),
 					new DictionaryEntryVariant(new HashSet<string>(), "efgh")
 				}));
+
+				yield return (new()
+				{
+					Text = "F",
+					Variants =
+					{
+						{ "G", new()
+						{
+							Variants = {
+								{ "J", new()
+								{
+									Text = "K"
+								} }, { "L", new()
+								{
+									Text = "M"
+								}
+								}
+							}
+						}
+						}, { "H", new()
+						{
+							Text = "I",
+							Variants =
+							{
+								{ "N", new()
+								{
+									Text = "O"
+								}
+								}, { "P", new()
+								{
+									Text = "Q"
+								}
+								}
+							}
+						}
+						}
+					}
+				}, new ComplexDictionaryEntry(new[]
+				{
+					new DictionaryEntryVariant(new[] {"G", "J" }.ToHashSet(), "K"),
+					new DictionaryEntryVariant(new[] {"G", "L" }.ToHashSet(), "M"),
+					new DictionaryEntryVariant(new[] {"H", "N" }.ToHashSet(), "O"),
+					new DictionaryEntryVariant(new[] {"H", "P" }.ToHashSet(), "Q"),
+					new DictionaryEntryVariant(new[] {"H" }.ToHashSet(), "I"),
+					new DictionaryEntryVariant(new HashSet<string>(), "F")
+				}));
 			}
 
 			return GetItems().Select(t => TupleToObjects(t));
